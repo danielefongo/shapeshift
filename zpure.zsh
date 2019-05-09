@@ -4,48 +4,23 @@ autoload -U colors && colors
 source "async.zsh"
 source "git.zsh"
 
-# Current directory, truncated to 3 path elements (or 4 when one of them is "~")
-# The number of elements to keep can be specified as ${1}
-function PR_DIR() {
-    local sub=${1}
-    if [[ "${sub}" == "" ]]; then
-        sub=3
-    fi
-    local len="$(expr ${sub} + 1)"
-    local full="$(print -P "%d")"
-    local relfull="$(print -P "%~")"
-    local shorter="$(print -P "%${len}~")"
-    local current="$(print -P "%${len}(~:.../:)%${sub}~")"
-    local last="$(print -P "%1~")"
+PROMPT_ARROW_CHAR="❯"
 
-    PROMPT_DIRTRIM=1
-    # Longer path for '~/...'
-    if [[ "${shorter}" == \~/* ]]; then
-        current=${shorter}
-    fi
+function prompt_dir() {
+    local current="$(print -P "%4(~:.../:)%3~")"
+    local last="$(print -P "%1~")"
 
     local truncated="$(echo "${current%/*}/")"
 
-    # Handle special case of directory '/' or '~something'
-    if [[ "${truncated}" == "/" || "${relfull[1,-2]}" != */* ]]; then
+    if [[ "${truncated}" == "/" || "${current}" == "~" ]]; then
         truncated=""
-    fi
-
-    # Handle special case of last being '/...' one directory down
-    if [[ "${full[2,-1]}" != "" && "${full[2,-1]}" != */* ]]; then
-        truncated="/"
-        last=${last[2,-1]} # take substring
     fi
 
     echo "%{$fg[blue]%}${truncated}%B${last}%b%{$reset_color%}"
 }
 
-# The arrow symbol that is used in the prompt
-PR_ARROW_CHAR="❯"
-
-# The arrow in red (for root) or violet (for regular user)
-function PR_ARROW() {
-  echo "%{$fg[green]%}%(?..%{$fg[red]%})%B${PR_ARROW_CHAR}%b%{$reset_color%}"
+function prompt_arrow() {
+  echo "%{$fg[green]%}%(?..%{$fg[red]%})%B${PROMPT_ARROW_CHAR}%b%{$reset_color%}"
 }
 
 function git_prompt_string() {
@@ -58,7 +33,7 @@ function git_prompt_string() {
 
 # Prompt
 function PCMD() {
-    echo "$(PR_DIR) $(PR_ARROW) "
+    echo "$(prompt_dir) $(prompt_arrow) "
 }
 
 function RCMD() {
