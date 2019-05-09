@@ -50,7 +50,6 @@ function PR_ARROW() {
   echo "%{$fg[green]%}%(?..%{$fg[red]%})%B${PR_ARROW_CHAR}%b%{$reset_color%}"
 }
 
-# Set RHS prompt for git repositories
 DIFF_SYMBOL="-"
 GIT_PROMPT_PREFIX=" "
 GIT_PROMPT_SUFFIX=""
@@ -62,54 +61,72 @@ GIT_PROMPT_MODIFIED="%{$fg[blue]%}%B$DIFF_SYMBOL%b%{$reset_color%}"
 GIT_PROMPT_STAGED="%{$fg[green]%}%B$DIFF_SYMBOL%b%{$reset_color%}"
 GIT_PROMPT_DETACHED="%{$fg[neon]%}%B!%b%{$reset_color%}"
 
-GIT_FETCH_TIME_IN_SECONDS=5
-
-# Show Git branch/tag, or name-rev if on detached head
-function parse_git_branch() {
-    (git symbolic-ref -q HEAD || git name-rev --name-only --no-undefined --always HEAD) 2> /dev/null
+function git_branch() {
+    branch=$(git symbolic-ref -q HEAD || git name-rev --name-only --no-undefined --always HEAD) 2> /dev/null
+    echo ${branch/(refs\/heads|tags)\//}
 }
 
-function parse_git_detached() {
+function git_detached() {
     if ! git symbolic-ref HEAD >/dev/null 2>&1; then
-        echo "${GIT_PROMPT_DETACHED}"
+        echo "Y"
     fi
 }
 
-# Show different symbols as appropriate for various Git repository states
-function parse_git_state() {
-    # Compose this value via multiple conditional appends.
+function git_behind() {
+    echo $(git log --oneline ..@{u} 2> /dev/null | wc -l | tr -d ' ')
+}
+
+function git_ahead() {
+    echo $(git log --oneline @{u}.. 2> /dev/null | wc -l | tr -d ' ')
+}
+
+function git_untracked() {
+    echo $(git ls-files --other --exclude-standard :/ 2> /dev/null)
+}
+
+function git_merge_dir() {
+    echo "$(git rev-parse --git-dir 2> /dev/null)/MERGE_HEAD"
+}
+
+function git_modified() {
+    if ! git diff --quiet 2> /dev/null; then
+        echo "Y"
+    fi
+}
+
+function git_staged() {
+    if ! git diff --cached --quiet 2> /dev/null; then
+        echo "Y"
+    fi
+}
+
+function git_state() {
     local GIT_STATE=""
 
-    local NUM_AHEAD="$(git log --oneline @{u}.. 2> /dev/null | wc -l | tr -d ' ')"
+    local NUM_AHEAD="$(git_ahead)"
     if [ "$NUM_AHEAD" -gt 0 ]; then
-    GIT_STATE=$GIT_STATE${GIT_PROMPT_AHEAD//NUM/$NUM_AHEAD}
+        GIT_STATE=$GIT_STATE${GIT_PROMPT_AHEAD//NUM/$NUM_AHEAD}
     fi
 
-    local NUM_BEHIND="$(git log --oneline ..@{u} 2> /dev/null | wc -l | tr -d ' ')"
+    local NUM_BEHIND="$(git_behind)"
     if [ "$NUM_BEHIND" -gt 0 ]; then
-        if [[ -n $GIT_STATE ]]; then
-            GIT_STATE="$GIT_STATE "
-        fi
-    GIT_STATE=$GIT_STATE${GIT_PROMPT_BEHIND//NUM/$NUM_BEHIND}
+        GIT_STATE="$GIT_STATE ${GIT_PROMPT_BEHIND//NUM/$NUM_BEHIND}"
     fi
 
-    local GIT_DIR="$(git rev-parse --git-dir 2> /dev/null)"
-    if [ -n $GIT_DIR ] && test -r $GIT_DIR/MERGE_HEAD; then
-        if [[ -n $GIT_STATE ]]; then
-            GIT_STATE="$GIT_STATE "
-        fi
-      GIT_STATE=$GIT_STATE$GIT_PROMPT_MERGING
+    local GIT_MERGE_DIR="$(git rev-parse --git-dir 2> /dev/null)"
+    if [ -f $GIT_MERGE_DIR ]; then
+      GIT_STATE="$GIT_STATE $GIT_PROMPT_MERGING"
     fi
 
-    if [[ -n $(git ls-files --other --exclude-standard :/ 2> /dev/null) ]]; then
+    if [[ -n "$(git_untracked)" ]]; then
       GIT_DIFF=$GIT_PROMPT_UNTRACKED
     fi
 
-    if ! git diff --quiet 2> /dev/null; then
+    if [[ "$(git_modified)" ]]; then
       GIT_DIFF=$GIT_DIFF$GIT_PROMPT_MODIFIED
     fi
 
-    if ! git diff --cached --quiet 2> /dev/null; then
+    if [[ "$(git_staged)" ]]; then
       GIT_DIFF=$GIT_DIFF$GIT_PROMPT_STAGED
     fi
 
@@ -123,14 +140,12 @@ function parse_git_state() {
     fi
 }
 
-# If inside a Git repository, print its branch and state
-RPR_SHOW_GIT=true # Set to false to disable git status in rhs prompt
 function git_prompt_string() {
-  if [[ "${RPR_SHOW_GIT}" == "true" ]]; then
-    local git_where="$(parse_git_branch)"
-    local git_detached="$(parse_git_detached)"
-    [ -n "$git_where" ] && echo " $(parse_git_state)$GIT_PROMPT_PREFIX%{$fg[white]%}%B${git_where#(refs/heads/|tags/)}%b$git_detached$GIT_PROMPT_SUFFIX"
-  fi
+    local git_where="$(git_branch)"
+    if [[ $(git_detached) ]]; then
+        local git_detached="${GIT_PROMPT_DETACHED}"
+    fi
+    [ -n "$git_where" ] && echo " $(git_state)$GIT_PROMPT_PREFIX%{$fg[white]%}%B${git_where}%b$git_detached$GIT_PROMPT_SUFFIX"
 }
 
 # Prompt
