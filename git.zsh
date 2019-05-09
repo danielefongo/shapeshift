@@ -1,31 +1,54 @@
-DIFF_SYMBOL="-"
-GIT_PROMPT_AHEAD="%{$fg[cyan]%}%B+NUM%b%{$reset_color%}"
-GIT_PROMPT_BEHIND="%{$fg[cyan]%}%B-NUM%b%{$reset_color%}"
-GIT_PROMPT_MERGING="%{$fg[cyan]%}%Bx%b%{$reset_color%}"
-GIT_PROMPT_UNTRACKED="%{$fg[red]%}%B$DIFF_SYMBOL%b%{$reset_color%}"
-GIT_PROMPT_MODIFIED="%{$fg[blue]%}%B$DIFF_SYMBOL%b%{$reset_color%}"
-GIT_PROMPT_STAGED="%{$fg[green]%}%B$DIFF_SYMBOL%b%{$reset_color%}"
-GIT_PROMPT_DETACHED="%{$fg[neon]%}%B!%b%{$reset_color%}"
+GIT_BRANCH_COLOR="white"
+GIT_BRANCH_BOLD=true
+
+GIT_AHEAD="+NUM"
+GIT_AHEAD_COLOR="cyan"
+GIT_AHEAD_BOLD=true
+
+GIT_BEHIND="-NUM"
+GIT_BEHIND_COLOR="cyan"
+GIT_BEHIND_BOLD=true
+
+GIT_DETATCHED="!"
+GIT_DETATCHED_COLOR="red"
+GIT_DETATCHED_BOLD=true
+
+GIT_MERGING="x"
+GIT_MERGING_COLOR="cyan"
+GIT_MERGING_BOLD=true
+
+GIT_DIFF_SYMBOL="-"
+GIT_UNTRACKED_COLOR="red"
+GIT_UNTRACKED_BOLD=true
+GIT_MODIFIED_COLOR="blue"
+GIT_MODIFIED_BOLD=true
+GIT_STAGED_COLOR="green"
+GIT_STAGED_BOLD=true
+
+source "color.zsh"
 
 function git_branch() {
     branch=$(git symbolic-ref -q HEAD || git name-rev --name-only --no-undefined --always HEAD) 2> /dev/null
     if [[ $branch ]]; then
         git_where="${branch/(refs\/heads|tags)\//}"
-        echo "%{$fg[white]%}%B${git_where}%b"
+        colorize ${git_where} $GIT_BRANCH_COLOR $GIT_BRANCH_BOLD
     fi
 }
 
 function git_diffs() {
     if [[ $(git ls-files --other --exclude-standard :/ 2> /dev/null) ]] then
-        GIT_DIFFS=$GIT_PROMPT_UNTRACKED
+        local untracked=$(colorize $GIT_DIFF_SYMBOL $GIT_UNTRACKED_COLOR $GIT_UNTRACKED_BOLD)
+        GIT_DIFFS="$untracked"
     fi
 
     if ! git diff --quiet 2> /dev/null; then
-        GIT_DIFFS=$GIT_DIFFS$GIT_PROMPT_MODIFIED
+        local modified=$(colorize $GIT_DIFF_SYMBOL $GIT_MODIFIED_COLOR $GIT_MODIFIED_BOLD)
+        GIT_DIFFS="$GIT_DIFFS$modified"
     fi
 
     if ! git diff --cached --quiet 2> /dev/null; then
-        GIT_DIFFS=$GIT_DIFFS$GIT_PROMPT_STAGED
+        local staged=$(colorize $GIT_DIFF_SYMBOL $GIT_STAGED_COLOR $GIT_STAGED_BOLD)
+        GIT_DIFFS="$GIT_DIFFS$staged"
     fi
 
     if [[ $GIT_DIFFS ]]; then
@@ -36,15 +59,18 @@ function git_diffs() {
 function git_position() {
     local NUM_AHEAD="$(git log --oneline @{u}.. 2> /dev/null | wc -l | tr -d ' ')"
     if [ "$NUM_AHEAD" -gt 0 ]; then
-        GIT_POSITION=$GIT_POSITION${GIT_PROMPT_AHEAD//NUM/$NUM_AHEAD}
+        local ahead=$(colorize $GIT_AHEAD $GIT_AHEAD_COLOR $GIT_AHEAD_BOLD)
+        GIT_POSITION="${ahead//NUM/$NUM_AHEAD}"
     fi
 
     local NUM_BEHIND="$(git log --oneline ..@{u} 2> /dev/null | wc -l | tr -d ' ')"
     if [ "$NUM_BEHIND" -gt 0 ]; then
-        GIT_POSITION="$GIT_POSITION ${GIT_PROMPT_BEHIND//NUM/$NUM_BEHIND}"
+        local behind=$(colorize $GIT_BEHIND $GIT_BEHIND_COLOR $GIT_BEHIND_BOLD)
+        GIT_POSITION="$GIT_POSITION ${behind//NUM/$NUM_BEHIND}"
     fi
 
     if ! git symbolic-ref HEAD >/dev/null 2>&1; then
+        local detached=$(colorize $GIT_DETATCHED $GIT_DETATCHED_COLOR $GIT_DETATCHED_BOLD)
         local GIT_POSITION="${GIT_PROMPT_DETACHED}"
     fi
 
@@ -56,7 +82,8 @@ function git_position() {
 function git_merging() {
     local GIT_MERGE_DIR="$(git rev-parse --git-dir 2> /dev/null)/MERGE_HEAD"
     if [ -f $GIT_MERGE_DIR ]; then
-      echo "$GIT_PROMPT_MERGING "
+        local merging=$(colorize $GIT_MERGING $GIT_MERGING_COLOR $GIT_MERGING_BOLD)
+        echo "$merging "
     fi
 }
 
