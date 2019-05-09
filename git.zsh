@@ -56,7 +56,7 @@ function git_position() {
 function git_merging() {
     local GIT_MERGE_DIR="$(git rev-parse --git-dir 2> /dev/null)/MERGE_HEAD"
     if [ -f $GIT_MERGE_DIR ]; then
-      echo "$GIT_PROMPT_MERGING"
+      echo "$GIT_PROMPT_MERGING "
     fi
 }
 
