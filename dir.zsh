@@ -1,13 +1,4 @@
-PROMPT_ARROW_CHAR="❯"
-PROMPT_ARROW_CHAR_BOLD=true
-PROMPT_ARROW_OK_COLOR="green"
-PROMPT_ARROW_KO_COLOR="red"
-
-TRUNCATED_DIR_COLOR="blue"
-TRUNCATED_DIR_BOLD=false
-LAST_FOLDER_DIR_COLOR="blue"
-LAST_FOLDER_DIR_BOLD=true
-
+source "properties"
 source "color.zsh"
 
 function prompt_dir() {
