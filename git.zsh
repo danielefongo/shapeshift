@@ -51,7 +51,7 @@ function git_position() {
 
     if ! git symbolic-ref HEAD >/dev/null 2>&1; then
         local detached=$(colorize "$GIT_DETATCHED" $GIT_DETATCHED_COLOR $GIT_DETATCHED_BOLD)
-        local GIT_POSITION="${GIT_PROMPT_DETACHED}"
+        GIT_POSITION="${detached}"
     fi
 
     echo "$GIT_POSITION"
