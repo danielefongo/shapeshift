@@ -1,3 +1,5 @@
+PROMPT_RIGHT_ELEMENTS=(git_position git_merging git_diffs git_branch)
+
 GIT_BRANCH_COLOR="white"
 GIT_BRANCH_BOLD=true
 

@@ -3,6 +3,10 @@ function colorize() {
   local color="$2"
   local bold=${3}
 
+  if [[ $text == "" ]]; then
+    return
+  fi
+
   if [[ $bold == true ]]; then
     text="%B${text}%b"
   fi

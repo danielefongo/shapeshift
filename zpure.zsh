@@ -9,17 +9,22 @@ function prompt_dir_and_arrow() {
     echo "$(prompt_dir) $(prompt_arrow) "
 }
 
-# Prompt
 function PCMD() {
     echo "$(prompt_dir_and_arrow)"
 }
 
 function RCMD() {
-    echo "$(git_full)"
+    for method in $PROMPT_RIGHT_ELEMENTS; do
+        methodOutput=$(eval "$method")
+        if [[ $methodOutput ]]; then
+          FULL="$FULL $methodOutput"
+        fi
+    done
+    echo "${FULL}"
 }
 
-PROMPT='$(PCMD)' # single quotes to prevent immediate execution
-RPROMPT='' # set asynchronously and dynamically
+PROMPT='$(PCMD)'
+RPROMPT=''
 
 function TRAPUSR1() {
     RPROMPT=$(cat < /tmp/pure)
