@@ -1,12 +1,17 @@
 function asyncJob {
   local fun="$1"
   local callback="$2"
+  shift
+  shift
+  local arguments="$@"
   local job="/tmp/async_$(( $RANDOM % 10000 + 1 ))"
 
   function async() {
-    $fun > $job
+    $fun $arguments > $job
     local exitStatus=$?
-    $callback $exitStatus "$(cat $job)"
+    if [[ "$callback" ]]; then
+      $callback $exitStatus "$(cat $job)"
+    fi
     rm $job
     kill -s USR1 $$
   }

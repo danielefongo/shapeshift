@@ -14,10 +14,13 @@ function PCMD() {
 }
 
 function RCMD() {
+    local FULL=""
     for method in $PROMPT_RIGHT_ELEMENTS; do
-        methodOutput=$(eval "$method")
-        if [[ $methodOutput ]]; then
-          FULL="$FULL $methodOutput"
+        if [[ -f "/tmp/${method}" ]]; then
+          methodOutput=$(cat < /tmp/${method})
+          if [[ $methodOutput ]]; then
+            FULL="$FULL $methodOutput"
+          fi
         fi
     done
     echo "${FULL}"
@@ -27,18 +30,17 @@ PROMPT='$(PCMD)'
 RPROMPT=''
 
 function TRAPUSR1() {
-    RPROMPT=$(cat < /tmp/pure)
+    RPROMPT="$(RCMD)"
     zle && zle reset-prompt
 }
 
 function asyncRun() {
-    echo "$(RCMD)"
-}
-
-function asyncCallback() {
-    echo "$2" > /tmp/pure
+    method="${1}"
+    eval "$method" > "/tmp/$method"
 }
 
 function precmd() {
-    asyncJob asyncRun asyncCallback
+    for method in $PROMPT_RIGHT_ELEMENTS; do
+        asyncJob asyncRun "" ${method}
+    done
 }
