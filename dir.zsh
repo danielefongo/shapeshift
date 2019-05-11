@@ -10,13 +10,13 @@ function prompt_dir() {
     if [[ "${truncated}" == "/" || "${current}" == "~" ]]; then
         truncated=""
     else
-        truncated=$(colorize $truncated $TRUNCATED_DIR_COLOR $TRUNCATED_DIR_BOLD)
+        truncated=$(colorize $truncated $ZPURE_TRUNCATED_DIR_COLOR $ZPURE_TRUNCATED_DIR_BOLD)
     fi
 
-    last=$(colorize $last $LAST_FOLDER_DIR_COLOR $LAST_FOLDER_DIR_BOLD)
+    last=$(colorize $last $ZPURE_LAST_FOLDER_DIR_COLOR $ZPURE_LAST_FOLDER_DIR_BOLD)
     echo "$truncated$last"
 }
 
 function prompt_arrow() {
-    colorizeArrow ${PROMPT_ARROW_CHAR} ${PROMPT_ARROW_OK_COLOR} ${PROMPT_ARROW_KO_COLOR} ${PROMPT_ARROW_CHAR_BOLD}
+    colorizeArrow ${ZPURE_ARROW_CHAR} ${ZPURE_ARROW_OK_COLOR} ${ZPURE_ARROW_KO_COLOR} ${ZPURE_ARROW_CHAR_BOLD}
 }
