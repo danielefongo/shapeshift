@@ -1,7 +1,7 @@
 source "properties"
 source "color.zsh"
 
-function git_branch() {
+function async_git_branch() {
     branch=$(git symbolic-ref -q HEAD || git name-rev --name-only --no-undefined --always HEAD) 2> /dev/null
     if [[ $branch ]]; then
         git_where="${branch/(refs\/heads|tags)\//}"
@@ -9,8 +9,8 @@ function git_branch() {
     fi
 }
 
-function git_diffs() {
-    if [[ -z "$(git_branch)" ]]; then
+function async_git_diffs() {
+    if [[ -z "$(async_git_branch)" ]]; then
         return
     fi
 
@@ -32,8 +32,8 @@ function git_diffs() {
     echo "$ZPURE_GIT_DIFFS"
 }
 
-function git_position() {
-    if [[ -z "$(git_branch)" ]]; then
+function async_git_position() {
+    if [[ -z "$(async_git_branch)" ]]; then
         return
     fi
 
@@ -57,8 +57,8 @@ function git_position() {
     echo "$ZPURE_GIT_POSITION"
 }
 
-function git_merging() {
-    if [[ -z "$(git_branch)" ]]; then
+function async_git_merging() {
+    if [[ -z "$(async_git_branch)" ]]; then
         return
     fi
 
