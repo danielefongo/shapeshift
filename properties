@@ -1,4 +1,5 @@
 PROMPT_RIGHT_ELEMENTS=(git_position git_merging git_diffs git_branch)
+PROMPT_LEFT_ELEMENTS=(prompt_dir prompt_arrow)
 
 ZPURE_GIT_BRANCH_COLOR="white"
 ZPURE_GIT_BRANCH_BOLD=true

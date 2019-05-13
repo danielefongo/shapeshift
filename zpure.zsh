@@ -5,15 +5,7 @@ source "async.zsh"
 source "git.zsh"
 source "dir.zsh"
 
-function prompt_dir_and_arrow() {
-    echo "$(prompt_dir) $(prompt_arrow) "
-}
-
-function PCMD() {
-    echo "$(prompt_dir_and_arrow)"
-}
-
-function RCMD() {
+function RIGHTCMD() {
     local FULL=""
     for method in $PROMPT_RIGHT_ELEMENTS; do
         if [[ -f "/tmp/${method}" ]]; then
@@ -26,11 +18,25 @@ function RCMD() {
     echo "${FULL}"
 }
 
-PROMPT='$(PCMD)'
+function LEFTCMD() {
+    local FULL=""
+    for method in $PROMPT_LEFT_ELEMENTS; do
+        if [[ -f "/tmp/${method}" ]]; then
+          methodOutput=$(cat < /tmp/${method})
+          if [[ $methodOutput ]]; then
+            FULL="$FULL$methodOutput "
+          fi
+        fi
+    done
+    echo "${FULL}"
+}
+
+PROMPT=''
 RPROMPT=''
 
 function TRAPUSR1() {
-    RPROMPT="$(RCMD)"
+    RPROMPT="$(RIGHTCMD)"
+    PROMPT="$(LEFTCMD)"
     zle && zle reset-prompt
 }
 
@@ -40,6 +46,9 @@ function asyncRun() {
 }
 
 function precmd() {
+    for method in $PROMPT_LEFT_ELEMENTS; do
+        asyncJob asyncRun "" ${method}
+    done
     for method in $PROMPT_RIGHT_ELEMENTS; do
         asyncJob asyncRun "" ${method}
     done
