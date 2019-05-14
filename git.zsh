@@ -44,7 +44,7 @@ function async_git_position() {
     if [ "$NUM_BEHIND" -gt 0 ]; then
         local behind=$(colorize "$ZPURE_GIT_BEHIND" $ZPURE_GIT_BEHIND_COLOR $ZPURE_GIT_BEHIND_BOLD)
         if [[ $ZPURE_GIT_POSITION ]]; then
-            $ZPURE_GIT_POSITION="$ZPURE_GIT_POSITION "
+            ZPURE_GIT_POSITION="$ZPURE_GIT_POSITION "
         fi
         ZPURE_GIT_POSITION="$ZPURE_GIT_POSITION${behind//NUM/$NUM_BEHIND}"
     fi
