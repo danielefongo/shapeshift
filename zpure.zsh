@@ -5,27 +5,21 @@ source "async.zsh"
 source "git.zsh"
 source "dir.zsh"
 
-function RIGHTCMD() {
+function PROMPTCMD() {
     local FULL=""
     local async=$1
-    for method in $PROMPT_RIGHT_ELEMENTS; do
-        local methodOutput=""
-        if [[ ! $method =~ "^async" ]]; then
-          methodOutput=$(eval "$method")
-        elif [[ -f "/tmp/${method}" && $async == true ]]; then
-          methodOutput=$(cat < "/tmp/${method}")
-        fi
-        if [[ $methodOutput ]]; then
-          FULL="$FULL $methodOutput"
-        fi
-    done
-    echo "${FULL}"
-}
 
-function LEFTCMD() {
-    local FULL=""
-    local async=$1
-    for method in $PROMPT_LEFT_ELEMENTS; do
+    local elements=("${PROMPT_LEFT_ELEMENTS[@]}")
+    local leftSpace=""
+    local rightSpace=" "
+
+    if [[ $2 == "right" ]]; then
+        elements=("${PROMPT_RIGHT_ELEMENTS[@]}")
+        leftSpace=" "
+        rightSpace=""
+    fi
+
+    for method in $elements; do
         local methodOutput=""
         if [[ ! $method =~ "^async" ]]; then
           methodOutput=$(eval "$method")
@@ -33,7 +27,7 @@ function LEFTCMD() {
           methodOutput=$(cat < "/tmp/${method}")
         fi
         if [[ $methodOutput ]]; then
-          FULL="$FULL$methodOutput "
+          FULL="$FULL$leftSpace$methodOutput$rightSpace"
         fi
     done
     echo "${FULL}"
@@ -41,8 +35,8 @@ function LEFTCMD() {
 
 function updatePrompt() {
     local async=$1
-    RPROMPT="$(RIGHTCMD $async)"
-    PROMPT="$(LEFTCMD $async)"
+    RPROMPT="$(PROMPTCMD $async right)"
+    PROMPT="$(PROMPTCMD $async left)"
     zle && zle reset-prompt
 }
 
