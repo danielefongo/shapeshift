@@ -46,7 +46,10 @@ function async_git_position() {
     local NUM_BEHIND="$(git log --oneline ..@{u} 2> /dev/null | wc -l | tr -d ' ')"
     if [ "$NUM_BEHIND" -gt 0 ]; then
         local behind=$(colorize "$ZPURE_GIT_BEHIND" $ZPURE_GIT_BEHIND_COLOR $ZPURE_GIT_BEHIND_BOLD)
-        ZPURE_GIT_POSITION="$ZPURE_GIT_POSITION ${behind//NUM/$NUM_BEHIND}"
+        if [[ $ZPURE_GIT_POSITION ]]; then
+            $ZPURE_GIT_POSITION="$ZPURE_GIT_POSITION "
+        fi
+        ZPURE_GIT_POSITION="$ZPURE_GIT_POSITION${behind//NUM/$NUM_BEHIND}"
     fi
 
     if ! git symbolic-ref HEAD >/dev/null 2>&1; then
