@@ -1,6 +1,3 @@
-source "properties"
-source "color.zsh"
-
 function prompt_dir() {
     local current="$(print -P "%4(~:.../:)%3~")"
     local last="$(print -P "%1~")"

@@ -1,6 +1,3 @@
-source "properties"
-source "color.zsh"
-
 function async_git_branch() {
     branch=$(git symbolic-ref -q HEAD || git name-rev --name-only --no-undefined --always HEAD) 2> /dev/null
     if [[ $branch ]]; then

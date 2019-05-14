@@ -1,9 +1,16 @@
 setopt prompt_subst
 autoload -U colors && colors
 
-source "async.zsh"
-source "git.zsh"
-source "dir.zsh"
+mypath=${0:a:h}
+
+#common files
+source "$mypath/properties"
+source "$mypath/color.zsh"
+
+#functions
+source "$mypath/async.zsh"
+source "$mypath/git.zsh"
+source "$mypath/dir.zsh"
 
 function PROMPTCMD() {
     local FULL=""
