@@ -4,15 +4,13 @@ function asyncJob {
   shift
   shift
   local arguments="$@"
-  local job="/tmp/async_$(( $RANDOM % 10000 + 1 ))"
 
   function async() {
-    $fun $arguments > $job
+    job=$($fun $arguments)
     local exitStatus=$?
     if [[ "$callback" ]]; then
-      $callback $exitStatus "$(cat $job)"
+      $callback $exitStatus "$job"
     fi
-    rm $job
     kill -s USR1 $$
   }
 
