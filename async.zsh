@@ -34,4 +34,5 @@ function asyncJob {
   async &!
 }
 
+zpty -d asynced 2>/dev/null
 zpty -b asynced asyncBuffer

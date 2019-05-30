@@ -1,6 +1,6 @@
 setopt prompt_subst
 autoload -U colors && colors
-typeset -A renderElements
+typeset -gA renderElements
 
 mypath=${0:a:h}
 
@@ -26,7 +26,7 @@ function PROMPTCMD() {
 
     local FULL=""
     for method in $elements; do
-        local methodOutput=${renderElements[$method]}
+        local methodOutput=${renderElements["$method"]}
         if [[ $methodOutput ]]; then
           FULL="$FULL$leftSpace$methodOutput$rightSpace"
         fi
@@ -43,25 +43,25 @@ function updatePrompt() {
 function asyncCallback() {
     calledMethod=$1
     output=${3//$'\015'}
-    renderElements[$calledMethod]=$output
+    renderElements["$calledMethod"]=$output
     updatePrompt
 }
 
 function precmd() {
     for method in $PROMPT_LEFT_ELEMENTS; do
         if [[ $method =~ "^async" ]]; then
-            renderElements[$method]=""
+            renderElements["$method"]=""
             asyncJob $method asyncCallback
         else
-            renderElements[$method]=$(eval "$method")
+            renderElements["$method"]=$(eval "$method")
         fi
     done
     for method in $PROMPT_RIGHT_ELEMENTS; do
         if [[ $method =~ "^async" ]]; then
-            renderElements[$method]=""
+            renderElements["$method"]=""
             asyncJob $method asyncCallback
         else
-            renderElements[$method]=$(eval "$method")
+            renderElements["$method"]=$(eval "$method")
         fi
     done
     updatePrompt
