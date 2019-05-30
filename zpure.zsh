@@ -48,6 +48,7 @@ function asyncCallback() {
 }
 
 function precmd() {
+    print
     for method in $PROMPT_LEFT_ELEMENTS; do
         if [[ $method =~ "^async" ]]; then
             renderElements["$method"]=""
