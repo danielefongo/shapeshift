@@ -11,7 +11,11 @@ function colorize() {
     text="%B${text}%b"
   fi
 
-  echo "%{$fg[${color}]%}${text}%{$reset_color%}"
+  if [[ $color =~ ^[a-z] ]]; then
+    echo "%{$fg[${color}]%}${text}%{$reset_color%}"
+  else
+    echo "%F{$color}${text}%f"
+  fi
 }
 
 function colorizeArrow() {
