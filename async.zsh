@@ -1,3 +1,19 @@
+zmodload zsh/zpty
+
+function asyncBuffer() {
+  while read line; do
+    echo $line
+  done
+}
+
+function TRAPUSR1() {
+  while zpty -r asynced line; do
+    for callback fun exitstatus out in ${line}; do
+      eval "$callback $fun $exitstatus $out"
+    done
+  done
+}
+
 function asyncJob {
   local fun="$1"
   local callback="$2"
@@ -9,10 +25,13 @@ function asyncJob {
     job=$($fun $arguments)
     local exitStatus=$?
     if [[ "$callback" ]]; then
-      $callback $exitStatus "$job"
+      zpty -w asynced "$callback \"$fun\" \"$exitStatus\" \"$job\" "
+      sleep 0.01
+      kill -s USR1 $$
     fi
-    kill -s USR1 $$
   }
 
   async &!
 }
+
+zpty -b asynced asyncBuffer

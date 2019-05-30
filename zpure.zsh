@@ -1,5 +1,6 @@
 setopt prompt_subst
 autoload -U colors && colors
+typeset -A renderElements
 
 mypath=${0:a:h}
 
@@ -13,26 +14,19 @@ source "$mypath/git.zsh"
 source "$mypath/dir.zsh"
 
 function PROMPTCMD() {
-    local FULL=""
-    local async=$1
-
     local elements=("${PROMPT_LEFT_ELEMENTS[@]}")
     local leftSpace=""
     local rightSpace=" "
 
-    if [[ $2 == "right" ]]; then
+    if [[ $1 == "right" ]]; then
         elements=("${PROMPT_RIGHT_ELEMENTS[@]}")
         leftSpace=" "
         rightSpace=""
     fi
 
+    local FULL=""
     for method in $elements; do
-        local methodOutput=""
-        if [[ ! $method =~ "^async" ]]; then
-          methodOutput=$(eval "$method")
-        elif [[ -f "/tmp/${method}" && $async == true ]]; then
-          methodOutput=$(cat < "/tmp/${method}")
-        fi
+        local methodOutput=${renderElements[$method]}
         if [[ $methodOutput ]]; then
           FULL="$FULL$leftSpace$methodOutput$rightSpace"
         fi
@@ -41,31 +35,34 @@ function PROMPTCMD() {
 }
 
 function updatePrompt() {
-    local async=$1
-    RPROMPT="$(PROMPTCMD $async right)"
-    PROMPT="$(PROMPTCMD $async left)"
+    RPROMPT="$(PROMPTCMD right)"
+    PROMPT="$(PROMPTCMD left)"
     zle && zle reset-prompt
 }
 
-function TRAPUSR1() {
-    updatePrompt true
-}
-
-function asyncRun() {
-    method="${1}"
-    eval "$method" > "/tmp/$method"
+function asyncCallback() {
+    calledMethod=$1
+    output=${3//$'\015'}
+    renderElements[$calledMethod]=$output
+    updatePrompt
 }
 
 function precmd() {
-    updatePrompt false
     for method in $PROMPT_LEFT_ELEMENTS; do
         if [[ $method =~ "^async" ]]; then
-            asyncJob asyncRun "" ${method}
+            renderElements[$method]=""
+            asyncJob $method asyncCallback
+        else
+            renderElements[$method]=$(eval "$method")
         fi
     done
     for method in $PROMPT_RIGHT_ELEMENTS; do
         if [[ $method =~ "^async" ]]; then
-            asyncJob asyncRun "" ${method}
+            renderElements[$method]=""
+            asyncJob $method asyncCallback
+        else
+            renderElements[$method]=$(eval "$method")
         fi
     done
+    updatePrompt
 }
