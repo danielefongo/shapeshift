@@ -9,7 +9,7 @@ function asyncBuffer() {
 function TRAPUSR1() {
   while zpty -r asynced line; do
     for callback fun exitstatus out in ${line}; do
-      eval "$callback $fun $exitstatus $out"
+      eval "$callback $fun $exitstatus $out" 2>/dev/null
     done
   done
 }
