@@ -37,7 +37,7 @@ function PROMPTCMD() {
 function updatePrompt() {
     RPROMPT="$(PROMPTCMD right)"
     PROMPT="$(PROMPTCMD left)"
-    zle && zle reset-prompt
+    zle && zle reset-prompt && zle -R
 }
 
 function asyncCallback() {
