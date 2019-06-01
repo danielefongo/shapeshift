@@ -1,4 +1,5 @@
 zmodload zsh/zpty
+typeset -gA asyncJobs
 
 function asyncBuffer() {
   while read line; do
@@ -31,7 +32,9 @@ function asyncJob {
     fi
   }
 
+  kill ${asyncJobs["$fun"]} 2>/dev/null
   async &!
+  asyncJobs["$fun"]="$!"
 }
 
 zpty -d asynced 2>/dev/null
