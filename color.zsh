@@ -18,15 +18,26 @@ function colorize() {
   fi
 }
 
-function colorizeArrow() {
-  local text="$1"
+function colorizeFromStatus() {
+  local okText="$1"
   local okColor="$2"
-  local koColor="$3"
-  local bold=${4}
+  local okBold=${3}
 
-  if [[ $bold == true ]]; then
-    text="%B${text}%b"
+  local koText="$4"
+  local koColor="$5"
+  local koBold=${6}
+
+
+  if [[ $okBold == true ]]; then
+    okText="%B${okText}%b"
   fi
-  echo "%(?.%{$fg[${okColor}]%}.%{$fg[${koColor}]%})${text}%{$reset_color%}"
 
+  if [[ $koBold == true ]]; then
+    koText="%B${koText}%b"
+  fi
+
+  text="%(?.%{${okText}%}.%{${koText}%})"
+
+
+  echo "%(?.%{$fg[${okColor}]%}.%{$fg[${koColor}]%})${text}%{$reset_color%}"
 }

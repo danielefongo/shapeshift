@@ -35,8 +35,8 @@ function PROMPTCMD() {
 }
 
 function updatePrompt() {
-    RPROMPT="$(PROMPTCMD right)"
     PROMPT="$(PROMPTCMD left)"
+    RPROMPT="$(PROMPTCMD right)"
     zle && zle reset-prompt && zle -R
 }
 

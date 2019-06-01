@@ -15,5 +15,5 @@ function prompt_dir() {
 }
 
 function prompt_arrow() {
-    colorizeArrow ${ZPURE_ARROW_CHAR} ${ZPURE_ARROW_OK_COLOR} ${ZPURE_ARROW_KO_COLOR} ${ZPURE_ARROW_CHAR_BOLD}
+    colorizeFromStatus ${ZPURE_ARROW_OK_CHAR} ${ZPURE_ARROW_OK_COLOR} ${ZPURE_ARROW_OK_CHAR_BOLD} ${ZPURE_ARROW_KO_CHAR} ${ZPURE_ARROW_KO_COLOR} ${ZPURE_ARROW_KO_CHAR_BOLD}
 }
