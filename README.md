@@ -75,6 +75,9 @@ ZPURE_TRUNCATED_DIR_COLOR="blue"
 ZPURE_TRUNCATED_DIR_BOLD=false
 ZPURE_LAST_FOLDER_DIR_COLOR="blue"
 ZPURE_LAST_FOLDER_DIR_BOLD=true
+
+ZPURE_GIT_DIR_COMMAND="git status"
+ZPURE_NON_GIT_DIR_COMMAND="ls"
 ```
 
 ### Segment functions
@@ -112,3 +115,7 @@ colorizeFromStatus <ok-text> <ok-color> <ok-bold> <ko-text> <ko-color> <ko-bold>
 ```
 
 Where bold can be `true` or `false`.
+
+### Zero length command
+
+`ZPURE_GIT_DIR_COMMAND` and `ZPURE_NON_GIT_DIR_COMMAND` represent the commands that run when you just press enter without inserting any command. The first one is run in a git directory, the other one is run otherwise. You can assign to them a command or an empty string, if you don't want them to be run.
