@@ -77,6 +77,8 @@ ZPURE_LAST_FOLDER_DIR_COLOR="blue"
 ZPURE_LAST_FOLDER_DIR_BOLD=true
 ```
 
+### Segment functions
+
 As you can see, `PROMPT_LEFT_ELEMENTS` and `PROMPT_RIGHT_ELEMENTS` contain a list of elements: every element represents a `segment function` that will be evaluated to print data on the prompt. A PROMPT_LEFT_ELEMENTS segment function that is not async (for details see below) can print multiple lines using two or more `echo`.
 
 Functions starting with `async` are evaluated asynchronously so the prompt is not freezed while they are running; after the evaluation, the prompt will be refreshed automatically.
@@ -95,10 +97,18 @@ function async_sleeping_function() {
 PROMPT_LEFT_ELEMENTS=(async_sleeping_function prompt_dir prompt_arrow)
 ```
 
-**Bonus**: you can use the `colorize` function inside a segment function to echo a colorized text. The signature is the following:
+### Colorize text
+
+You can use the `colorize` function inside a segment function to echo a colorized text. The signature is the following:
 
 ```
 colorize <text> <color> <bold>
+```
+
+You can also use `colorizeFromStatus` function inside a segment function to echo a colorized text based on the status of the last command. The signature is the following:
+
+```
+colorizeFromStatus <ok-text> <ok-color> <ok-bold> <ko-text> <ko-color> <ko-bold>
 ```
 
 Where bold can be `true` or `false`.
