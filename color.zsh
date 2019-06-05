@@ -11,11 +11,7 @@ function colorize() {
     text="%B${text}%b"
   fi
 
-  if [[ $color =~ ^[a-z] ]]; then
-    echo "%{$fg[${color}]%}${text}%{$reset_color%}"
-  else
-    echo "%F{$color}${text}%f"
-  fi
+  echo "%F{$color}${text}%f"
 }
 
 function colorizeFromStatus() {
@@ -36,8 +32,5 @@ function colorizeFromStatus() {
     koText="%B${koText}%b"
   fi
 
-  text="%(?.%{${okText}%}.%{${koText}%})"
-
-
-  echo "%(?.%{$fg[${okColor}]%}.%{$fg[${koColor}]%})${text}%{$reset_color%}"
+  echo "%(?.%F{$okColor}${okText}.%F{$koColor}${koText})%f"
 }

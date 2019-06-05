@@ -1,4 +1,5 @@
-setopt prompt_subst
+setopt promptsubst
+setopt promptpercent
 autoload -U colors && colors
 typeset -gA renderElements
 
@@ -34,9 +35,18 @@ function PROMPTCMD() {
     echo "${FULL}"
 }
 
+function adaptGUI() {
+    invisibleChars='%([BSUbfksu]|([FB]|){*})'
+    rpromptVisibleChars=${#${(S%%)PROMPT//$~invisibleChars/}}
+
+    ZLE_RPROMPT_INDENT=$(( - $rpromptVisibleChars ))
+}
+
 function updatePrompt() {
     PROMPT="$(PROMPTCMD left)"
     RPROMPT="$(PROMPTCMD right)"
+
+    adaptGUI
     zle && zle reset-prompt && zle -R
 }
 
