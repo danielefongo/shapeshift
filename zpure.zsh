@@ -1,6 +1,3 @@
-setopt promptsubst
-setopt promptpercent
-autoload -U colors && colors
 typeset -gA renderElements
 
 mypath=${0:a:h}

@@ -1,3 +1,7 @@
+setopt promptsubst
+setopt promptpercent
+autoload -U colors && colors
+
 function colorize() {
   local text="$1"
   local color="$2"
