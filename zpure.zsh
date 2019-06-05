@@ -33,8 +33,8 @@ function PROMPTCMD() {
 }
 
 function adaptGUI() {
-    invisibleChars='%([BSUbfksu]|([FB]|){*})'
-    rpromptVisibleChars=${#${(S%%)PROMPT//$~invisibleChars/}}
+    local invisibleChars='%([BSUbfksu]|([FB]|){*})'
+    local rpromptVisibleChars=${#${(S%%)PROMPT//$~invisibleChars/}}
 
     ZLE_RPROMPT_INDENT=$(( - $rpromptVisibleChars ))
 }
