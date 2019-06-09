@@ -55,6 +55,7 @@ function asyncCallback() {
 }
 
 function precmd() {
+    deleteAsyncJobs
     print
     for method in $PROMPT_LEFT_ELEMENTS; do
         if [[ $method =~ "^async" ]]; then

@@ -32,9 +32,14 @@ function asyncJob {
     fi
   }
 
-  kill ${asyncJobs["$fun"]} 2>/dev/null
   async &!
   asyncJobs["$fun"]="$!"
+}
+
+function deleteAsyncJobs() {
+  for job in $asyncJobs; do
+    kill $job 2>/dev/null
+  done
 }
 
 zpty -d asynced 2>/dev/null
