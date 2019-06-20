@@ -7,7 +7,7 @@ function asyncBuffer() {
   done
 }
 
-function TRAPUSR1() {
+function asyncHandler() {
   while zpty -r asynced line; do
     for callback fun exitstatus out in ${line}; do
       eval "$callback $fun $exitstatus $out" 2>/dev/null
@@ -27,8 +27,7 @@ function asyncJob {
     local exitStatus=$?
     if [[ "$callback" ]]; then
       zpty -w asynced "$callback \"$fun\" \"$exitStatus\" \"$job\" "
-      sleep 0.01
-      kill -s USR1 $$
+      kill -s WINCH $$
     fi
   }
 
@@ -44,3 +43,5 @@ function deleteAsyncJobs() {
 
 zpty -d asynced 2>/dev/null
 zpty -b asynced asyncBuffer
+
+trap 'asyncHandler' WINCH
