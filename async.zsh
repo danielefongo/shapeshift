@@ -6,9 +6,11 @@ lockfile="/tmp/async_${RANDOM}${RANDOM}${RANDOM}"
 touch $lockfile
 
 function asyncHandler() {
+  local buffer=""
   while zpty -r asynced line; do
-    eval "$line" 2>/dev/null
+    buffer+="$line"
   done
+  eval "${buffer//$'\015'}"
   zpty -w locking "unlock"
 }
 
@@ -48,5 +50,5 @@ zpty locking cat
 
 trap 'asyncHandler' WINCH
 function zshexit() {
-    rm $lockfile 2>/dev/null
+  rm $lockfile 2>/dev/null
 }

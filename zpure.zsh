@@ -40,8 +40,8 @@ function updatePrompt() {
 }
 
 function asyncCallback() {
-    calledMethod=$1
-    output=${3//$'\015'}
+    calledMethod=${1}
+    output=${3}
     renderElements["$calledMethod"]=$output
     updatePrompt
 }
