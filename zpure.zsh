@@ -32,18 +32,10 @@ function PROMPTCMD() {
     echo "${FULL}"
 }
 
-function adaptGUI() {
-    local invisibleChars='%([BSUbfksu]|([FB]|){*})'
-    local rpromptVisibleChars=${#${(S%%)PROMPT//$~invisibleChars/}}
-
-    ZLE_RPROMPT_INDENT=$(( - $rpromptVisibleChars ))
-}
-
 function updatePrompt() {
     PROMPT="$(PROMPTCMD left)"
     RPROMPT="$(PROMPTCMD right)"
 
-    adaptGUI
     zle && zle reset-prompt && zle -R
 }
 
@@ -55,7 +47,6 @@ function asyncCallback() {
 }
 
 function precmd() {
-    deleteAsyncJobs
     print
     for method in $PROMPT_LEFT_ELEMENTS; do
         if [[ $method =~ "^async" ]]; then

@@ -1,18 +1,15 @@
 zmodload zsh/zpty
+zmodload zsh/system
 typeset -gA asyncJobs
 
-function asyncBuffer() {
-  while read line; do
-    echo $line
-  done
-}
+lockfile="/tmp/async_${RANDOM}${RANDOM}${RANDOM}"
+touch $lockfile
 
 function asyncHandler() {
   while zpty -r asynced line; do
-    for callback fun exitstatus out in ${line}; do
-      eval "$callback $fun $exitstatus $out" 2>/dev/null
-    done
+    eval "$line" 2>/dev/null
   done
+  zpty -w locking "unlock"
 }
 
 function asyncJob {
@@ -26,22 +23,30 @@ function asyncJob {
     job=$($fun $arguments)
     local exitStatus=$?
     if [[ "$callback" ]]; then
-      zpty -w asynced "$callback \"$fun\" \"$exitStatus\" \"$job\" "
+    {
+      local asyncLock
+      zsystem flock -f asyncLock $lockfile
+
+      zpty -w asynced "$callback \"$fun\" \"$exitStatus\" \"$job\""
       kill -s WINCH $$
+      zpty -r locking var
+
+      zsystem flock -u $asyncLock
+    }
     fi
   }
 
+  kill -9 $asyncJobs["$fun"] 2>/dev/null
   async &!
   asyncJobs["$fun"]="$!"
 }
 
-function deleteAsyncJobs() {
-  for job in $asyncJobs; do
-    kill $job 2>/dev/null
-  done
-}
-
 zpty -d asynced 2>/dev/null
-zpty -b asynced asyncBuffer
+zpty -b asynced cat
+zpty -d locking 2>/dev/null
+zpty locking cat
 
 trap 'asyncHandler' WINCH
+function zshexit() {
+    rm $lockfile 2>/dev/null
+}
