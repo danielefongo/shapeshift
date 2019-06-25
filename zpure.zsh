@@ -82,5 +82,12 @@ zeroCommand () {
     zle accept-line
 }
 
+function zpure-load() {
+    source "$mypath/properties"
+    if [[ -f "$1" ]]; then
+        source "$1"
+    fi
+}
+
 zle -N zeroCommand
 bindkey '^M' zeroCommand

@@ -80,6 +80,8 @@ ZPURE_GIT_DIR_COMMAND=""
 ZPURE_NON_GIT_DIR_COMMAND=""
 ```
 
+You can define your own custom file and use the command `zpure-load [<file-location>]` to load your theme. If the file location is wrong or not provided, zpure will just load the default theme.
+
 ### Segment functions
 
 As you can see, `PROMPT_LEFT_ELEMENTS` and `PROMPT_RIGHT_ELEMENTS` contain a list of elements: every element represents a `segment function` that will be evaluated to print data on the prompt. A PROMPT_LEFT_ELEMENTS segment function can print multiple lines using two or more `echo` (or similar command).
