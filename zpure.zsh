@@ -8,6 +8,7 @@ source "$mypath/color.zsh"
 
 #functions
 source "$mypath/async.zsh"
+source "$mypath/time.zsh"
 source "$mypath/git.zsh"
 source "$mypath/dir.zsh"
 
@@ -65,6 +66,11 @@ function precmd() {
         fi
     done
     updatePrompt
+    timer_end
+}
+
+function preexec() {
+    timer_start
 }
 
 zeroCommand () {

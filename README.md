@@ -34,8 +34,11 @@ antigen bundle danielefongo/zpure
 Every element showed on the prompt can be customized by changing properties. You can do it by adding an assignment after the sourcing or the `antigen apply` command. The default properties that can be changed are the following:
 
 ```
-PROMPT_LEFT_ELEMENTS=(prompt_dir prompt_arrow)
+PROMPT_LEFT_ELEMENTS=(last_command_elapsed_seconds prompt_dir prompt_arrow)
 PROMPT_RIGHT_ELEMENTS=(async_git_position async_git_merging async_git_diffs async_git_branch)
+
+ZPURE_LAST_COMMAND_ELAPSED_SECONDS_COLOR="yellow"
+ZPURE_LAST_COMMAND_ELAPSED_SECONDS_BOLD=true
 
 ZPURE_GIT_BRANCH_COLOR="white"
 ZPURE_GIT_BRANCH_BOLD=true
