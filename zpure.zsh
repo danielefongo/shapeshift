@@ -73,27 +73,9 @@ function preexec() {
     timer_start
 }
 
-zeroCommand () {
-    if [ -z "$BUFFER" ]; then
-        if git rev-parse --git-dir > /dev/null 2>&1 ; then
-            if [[ $ZPURE_GIT_DIR_COMMAND ]]; then
-                BUFFER="$ZPURE_GIT_DIR_COMMAND"
-            fi
-        else
-            if [[ $ZPURE_NON_GIT_DIR_COMMAND ]]; then
-                BUFFER="$ZPURE_NON_GIT_DIR_COMMAND"
-            fi
-        fi
-    fi
-    zle accept-line
-}
-
 function zpure-load() {
     source "$mypath/properties"
     if [[ -f "$1" ]]; then
         source "$1"
     fi
 }
-
-zle -N zeroCommand
-bindkey '^M' zeroCommand

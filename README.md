@@ -78,9 +78,6 @@ ZPURE_TRUNCATED_DIR_COLOR="blue"
 ZPURE_TRUNCATED_DIR_BOLD=false
 ZPURE_LAST_FOLDER_DIR_COLOR="blue"
 ZPURE_LAST_FOLDER_DIR_BOLD=true
-
-ZPURE_GIT_DIR_COMMAND=""
-ZPURE_NON_GIT_DIR_COMMAND=""
 ```
 
 You can define your own custom file and use the command `zpure-load [<file-location>]` to load your theme. If the file location is wrong or not provided, zpure will just load the default theme.
