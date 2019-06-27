@@ -1,0 +1,12 @@
+#compdef _zpure-set zpure-set
+
+_zpure-set() {
+    local line
+
+    list=$(find "$HOME/.zpure" -mindepth 2 -maxdepth 2 -type d | sed -E 's/.*\.zpure\///')
+    _arguments -C \
+        "-h[Show help information]" \
+        "--h[Show help information]" \
+        "1: :($list)" \
+        "*::arg:->args"
+}

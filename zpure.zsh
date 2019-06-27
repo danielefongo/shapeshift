@@ -3,7 +3,7 @@ typeset -gA renderElements
 mypath=${0:a:h}
 
 #common files
-source "$mypath/properties"
+source "$mypath/theme.zsh"
 source "$mypath/color.zsh"
 
 #functions
@@ -73,9 +73,4 @@ function preexec() {
     timer_start
 }
 
-function zpure-load() {
-    source "$mypath/properties"
-    if [[ -f "$1" ]]; then
-        source "$1"
-    fi
-}
+zpure-load

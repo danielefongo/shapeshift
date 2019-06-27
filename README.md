@@ -80,8 +80,6 @@ ZPURE_LAST_FOLDER_DIR_COLOR="blue"
 ZPURE_LAST_FOLDER_DIR_BOLD=true
 ```
 
-You can define your own custom file and use the command `zpure-load [<file-location>]` to load your theme. If the file location is wrong or not provided, zpure will just load the default theme.
-
 ### Segment functions
 
 As you can see, `PROMPT_LEFT_ELEMENTS` and `PROMPT_RIGHT_ELEMENTS` contain a list of elements: every element represents a `segment function` that will be evaluated to print data on the prompt. A PROMPT_LEFT_ELEMENTS segment function can print multiple lines using two or more `echo` (or similar command).
@@ -117,6 +115,14 @@ colorizeFromStatus <ok-text> <ok-color> <ok-bold> <ko-text> <ko-color> <ko-bold>
 ```
 
 Where bold can be `true` or `false`.
+
+### Themes
+
+You can define your own custom theme by creating a repo on github with a file named `zpure.theme` in the root and containing all the customizations needed (see this [theme](https://github.com/danielefongo/fish-zpure) for example).
+
+You can then import your theme by using the command `zpure-import <user>/<repo>`.
+
+With the command `zpure-set [<user>/<repo>]` you set the theme as default. If the parameter is not passed, zpure will set the default theme. Remember that you can press TAB to show all the installed themes. If you are using antigen and you have problem with the auto-completion, just run `rm -rf ~/.zcompdump && antigen reset` and try again with a new shell.
 
 ### Zero length command
 
