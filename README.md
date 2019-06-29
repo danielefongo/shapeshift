@@ -123,7 +123,3 @@ You can define your own custom theme by creating a repo on github with a file na
 You can then import your theme by using the command `zpure-import <user>/<repo>`.
 
 With the command `zpure-set [<user>/<repo>]` you set the theme as default. If the parameter is not passed, zpure will set the default theme. Remember that you can press TAB to show all the installed themes. If you are using antigen and you have problem with the auto-completion, just run `rm -rf ~/.zcompdump && antigen reset` and try again with a new shell.
-
-### Zero length command
-
-`ZPURE_GIT_DIR_COMMAND` and `ZPURE_NON_GIT_DIR_COMMAND` represent the commands that run when you just press enter without inserting any command. The first one is run in a git directory, the other one is run otherwise. You can assign to them a command or an empty string, if you don't want them to be run. The default for these properties is empty string.
