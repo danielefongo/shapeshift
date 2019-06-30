@@ -1,16 +1,23 @@
 function prompt_dir() {
-    local current="$(print -P "%4(~:.../:)%3~")"
+    integer shortDirLength
+    ((shortDirLength = ZPURE_DIR_LENGTH ))
+
+    if [[ $shortDirLength -lt 1 ]]; then
+        return
+    fi
+
+    local current="$(print -P "%($((shortDirLength + 1))~|.../%${shortDirLength}~|%~)")"
     local last="$(print -P "%1~")"
 
     local truncated="$(echo "${current%/*}/")"
 
-    if [[ "${truncated}" == "/" || "${current}" == "~" ]]; then
+    if [[ "${truncated}" == "/" || "${last}" == "~" ]]; then
         truncated=""
     else
-        truncated=$(colorize $truncated $ZPURE_TRUNCATED_DIR_COLOR $ZPURE_TRUNCATED_DIR_BOLD)
+        truncated=$(colorize "$truncated" $ZPURE_TRUNCATED_DIR_COLOR $ZPURE_TRUNCATED_DIR_BOLD)
     fi
 
-    last=$(colorize $last $ZPURE_LAST_FOLDER_DIR_COLOR $ZPURE_LAST_FOLDER_DIR_BOLD)
+    last=$(colorize "$last" $ZPURE_LAST_FOLDER_DIR_COLOR $ZPURE_LAST_FOLDER_DIR_BOLD)
     echo "$truncated$last"
 }
 
