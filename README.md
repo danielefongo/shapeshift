@@ -116,7 +116,7 @@ colorizeFromStatus <ok-text> <ok-color> <ok-bold> <ko-text> <ko-color> <ko-bold>
 
 Where bold can be `true` or `false`.
 
-### Themes
+### Themes
 
 You can define your own custom theme by creating a repo on github with a file named `zpure.theme` in the root and containing all the customizations needed (see this [theme](https://github.com/danielefongo/fish-zpure) for example).
 
