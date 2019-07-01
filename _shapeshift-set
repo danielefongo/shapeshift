@@ -1,9 +1,9 @@
-#compdef _zpure-set zpure-set
+#compdef _shapeshift-set shapeshift-set
 
-_zpure-set() {
+_shapeshift-set() {
     local line
 
-    list=$(find "$HOME/.zpure" -mindepth 2 -maxdepth 2 -type d | sed -E 's/.*\.zpure\///')
+    list=$(find "$HOME/.shapeshift" -mindepth 2 -maxdepth 2 -type d | sed -E 's/.*\.shapeshift\///')
     _arguments -C \
         "-h[Show help information]" \
         "--h[Show help information]" \

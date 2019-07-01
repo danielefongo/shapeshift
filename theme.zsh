@@ -1,14 +1,14 @@
 mypath=${0:a:h}
 
-configDir="$HOME/.zpure"
-themeName="zpure.theme"
+configDir="$HOME/.shapeshift"
+themeName="shapeshift.theme"
 defaultFile="$configDir/default"
 
 if [[ ! -d "$configDir" ]]; then
   mkdir -p "$configDir"
 fi
 
-function zpure-load() {
+function shapeshift-load() {
     source "$mypath/properties"
 
     if [[ -f "$defaultFile" ]]; then
@@ -21,7 +21,7 @@ function zpure-load() {
     fi
 }
 
-function zpure-set() {
+function shapeshift-set() {
   local repo=$1
 
   if [[ -z $repo ]]; then
@@ -36,13 +36,13 @@ function zpure-set() {
       return
     fi
   fi
-  zpure-load
+  shapeshift-load
 }
 
-function zpure-import() {
+function shapeshift-import() {
   local repo=$1
   if [[ -z $repo ]]; then
-    echo "Pass repo as parameter (eg: danielefongo/fish-zpure)"
+    echo "Pass repo as parameter (eg: danielefongo/fish-shapeshift)"
     return
   fi
   (
@@ -68,15 +68,15 @@ function zpure-import() {
       return
     fi
 
-    zpure-set $repo
+    shapeshift-set $repo
   )
 }
 
 
 if declare -f antigen > /dev/null; then
-  fpath+="$mypath/_zpure-set"
+  fpath+="$mypath/_shapeshift-set"
 else
-  source "$mypath/_zpure-set"
+  source "$mypath/_shapeshift-set"
   autoload -U +X compinit && compinit
-  compdef _zpure-set zpure-set
+  compdef _shapeshift-set shapeshift-set
 fi

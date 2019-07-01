@@ -13,12 +13,12 @@ source "$mypath/git.zsh"
 source "$mypath/dir.zsh"
 
 function PROMPTCMD() {
-    local elements=("${PROMPT_LEFT_ELEMENTS[@]}")
+    local elements=("${SHAPESHIFT_PROMPT_LEFT_ELEMENTS[@]}")
     local leftSpace=""
     local rightSpace=" "
 
     if [[ $1 == "right" ]]; then
-        elements=("${PROMPT_RIGHT_ELEMENTS[@]}")
+        elements=("${SHAPESHIFT_PROMPT_RIGHT_ELEMENTS[@]}")
         leftSpace=" "
         rightSpace=""
     fi
@@ -49,7 +49,7 @@ function asyncCallback() {
 
 function precmd() {
     print
-    for method in $PROMPT_LEFT_ELEMENTS; do
+    for method in $SHAPESHIFT_PROMPT_LEFT_ELEMENTS; do
         if [[ $method =~ "^async" ]]; then
             renderElements["$method"]=""
             asyncJob $method asyncCallback
@@ -57,7 +57,7 @@ function precmd() {
             renderElements["$method"]=$(eval "$method")
         fi
     done
-    for method in $PROMPT_RIGHT_ELEMENTS; do
+    for method in $SHAPESHIFT_PROMPT_RIGHT_ELEMENTS; do
         if [[ $method =~ "^async" ]]; then
             renderElements["$method"]=""
             asyncJob $method asyncCallback
@@ -73,4 +73,4 @@ function preexec() {
     timer_start
 }
 
-zpure-load
+shapeshift-load
