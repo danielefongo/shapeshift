@@ -21,30 +21,36 @@ function shapeshift-load() {
     fi
 }
 
-function shapeshift-set() {
+function shape-shift() {
   local repo=$1
 
   if [[ -z $repo ]]; then
     rm "$defaultFile" 2>/dev/null
+  elif [[ -d "$configDir/$repo" ]]; then
+    shapeshift-set $repo
   else
-    local themeFile="$configDir/$repo/$themeName"
-
-    if [[ -f "$themeFile" ]]; then
-      echo $repo > "$defaultFile"
-    else
-      echo "Not existing theme"
-      return
-    fi
+    shapeshift-import $repo
   fi
+
   shapeshift-load
+}
+
+
+function shapeshift-set() {
+  local repo=$1
+
+  local themeFile="$configDir/$repo/$themeName"
+
+  if [[ -f "$themeFile" ]]; then
+    echo $repo > "$defaultFile"
+  else
+    echo "Not existing theme"
+    return
+  fi
 }
 
 function shapeshift-import() {
   local repo=$1
-  if [[ -z $repo ]]; then
-    echo "Pass repo as parameter (eg: danielefongo/fish-shapeshift)"
-    return
-  fi
   (
     if [[ ! -d $configDir/$repo ]]; then
       git clone "https://github.com/$repo" "$configDir/$repo" &>/dev/null
@@ -72,11 +78,10 @@ function shapeshift-import() {
   )
 }
 
-
 if declare -f antigen > /dev/null; then
-  fpath+="$mypath/_shapeshift-set"
+  fpath+="$mypath/_shape-shift"
 else
-  source "$mypath/_shapeshift-set"
+  source "$mypath/_shape-shift"
   autoload -U +X compinit && compinit
-  compdef _shapeshift-set shapeshift-set
+  compdef _shape-shift shape-shift
 fi

@@ -1,6 +1,6 @@
-#compdef _shapeshift-set shapeshift-set
+#compdef _shape-shift shape-shift
 
-_shapeshift-set() {
+_shape-shift() {
     local line
 
     list=$(find "$HOME/.shapeshift" -mindepth 2 -maxdepth 2 -type d | sed -E 's/.*\.shapeshift\///')
