@@ -48,6 +48,7 @@ function asyncCallback() {
 }
 
 function precmd() {
+    lastCommandStatus=$?
     print
     for method in $SHAPESHIFT_PROMPT_LEFT_ELEMENTS; do
         if [[ $method =~ "^async" ]]; then

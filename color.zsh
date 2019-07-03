@@ -15,7 +15,7 @@ function colorize() {
     text="%B${text}%b"
   fi
 
-  echo "%F{$color}${text}%f"
+  print -n "%F{$color}${text}%f"
 }
 
 function colorizeFromStatus() {
@@ -36,5 +36,9 @@ function colorizeFromStatus() {
     koText="%B${koText}%b"
   fi
 
-  echo "%(?.%F{$okColor}${okText}.%F{$koColor}${koText})%f"
+  if [[ $lastCommandStatus -eq 0 ]]; then
+    print -n "%F{$okColor}${okText}%f"
+  else
+    print -n "%F{$koColor}${koText}%f"
+  fi
 }
