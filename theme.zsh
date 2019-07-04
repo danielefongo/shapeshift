@@ -36,6 +36,27 @@ function shape-shift() {
 }
 
 
+function shape-reshape() {
+  find "$configDir" -mindepth 2 -maxdepth 2 -type d | sed -E 's/.*\.shapeshift\///' | while read repo; do
+  (
+    cd "$configDir/$repo"
+    git fetch &>/dev/null
+
+    UPSTREAM=${1:-'@{u}'}
+    LOCAL=$(git rev-parse @)
+    REMOTE=$(git rev-parse "$UPSTREAM")
+    BASE=$(git merge-base @ "$UPSTREAM")
+
+    if [ $LOCAL != $REMOTE -a $LOCAL = $BASE ]; then
+      git pull &>/dev/null
+      echo "$repo updated."
+    fi
+  )
+  done
+
+  shapeshift-load
+}
+
 function shapeshift-set() {
   local repo=$1
 
@@ -60,17 +81,9 @@ function shapeshift-import() {
       fi
     fi
 
-    cd "$configDir/$repo"
-    git pull &>/dev/null
-
-    if [[ ! -f $themeName ]]; then
+    if [[ ! -f "$configDir/$repo/$themeName" ]]; then
       echo "Not a valid theme"
       rm -rf "$configDir/$repo"
-      return
-    fi
-
-    if [[ $? -ne 0 ]]; then
-      echo "$repo is not a valid repo or already "
       return
     fi
 

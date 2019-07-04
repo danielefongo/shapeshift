@@ -124,3 +124,5 @@ You can define your own custom theme by creating a repo on github with a file na
 You can then import your theme by using the command `shapeshift-import <user>/<repo>`.
 
 With the command `shape-shift [<user>/<repo>]` you set the theme as default. If the theme is not installed, shapeshift will download it automatically. When the parameter is not passed, shapeshift will set the default theme. Remember that you can press TAB to show all the installed themes. If you are using antigen and you have problem with the auto-completion, just run `rm -rf ~/.zcompdump && antigen reset` and try again with a new shell.
+
+To update themes you should run `shape-reshape`.
