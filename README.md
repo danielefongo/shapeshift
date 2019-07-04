@@ -85,16 +85,14 @@ SHAPESHIFT_LAST_FOLDER_DIR_BOLD=true
 
 As you can see, `SHAPESHIFT_PROMPT_LEFT_ELEMENTS` and `SHAPESHIFT_PROMPT_RIGHT_ELEMENTS` contain a list of elements: every element represents a `segment function` that will be evaluated to print data on the prompt. A PROMPT_LEFT_ELEMENTS segment function can print multiple lines using two or more `echo` (or similar command).
 
-Functions starting with `async` are evaluated asynchronously so the prompt is not freezed while they are running; after the evaluation, the prompt will be refreshed automatically.
-
-You can define custom segments functions and add them in one of the array showed above:
+Custom segments functions can be created and added in one of the array showed above. If you add that segment function with `async_` prefix, that function will be run asynchronously so the prompt is not freezed while it is running; after the evaluation, the prompt will be refreshed automatically. An example of custom segment function:
 
 ```zsh
 # on .zshrc
 
 # loading stuff...
 
-function async_sleeping_function() {
+function sleeping_function() {
   sleep 10 && echo "i was sleeping"
 }
 

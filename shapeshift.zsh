@@ -1,6 +1,7 @@
 typeset -gA __shapeshift_render_elements
 
 __shapeshift_path=${0:a:h}
+__shapeshift_async_prefix="async_"
 
 #common files
 source "$__shapeshift_path/theme.zsh"
@@ -43,7 +44,7 @@ function __shapeshift_update_prompt() {
 function __shapeshift_async_callback() {
     local calledMethod=${1}
     local output=${3}
-    __shapeshift_render_elements["$calledMethod"]=$output
+    __shapeshift_render_elements["$__shapeshift_async_prefix$calledMethod"]=$output
     __shapeshift_update_prompt
 }
 
@@ -51,17 +52,17 @@ function precmd() {
     __shapeshift_last_command_status=$?
     print
     for method in $SHAPESHIFT_PROMPT_LEFT_ELEMENTS; do
-        if [[ $method =~ "^async" ]]; then
+        if [[ $method =~ "^$__shapeshift_async_prefix" ]]; then
             __shapeshift_render_elements["$method"]=""
-            asyncJob $method __shapeshift_async_callback
+            asyncJob ${method//$__shapeshift_async_prefix/} __shapeshift_async_callback
         else
             __shapeshift_render_elements["$method"]=$(eval "$method")
         fi
     done
     for method in $SHAPESHIFT_PROMPT_RIGHT_ELEMENTS; do
-        if [[ $method =~ "^async" ]]; then
+        if [[ $method =~ "^$__shapeshift_async_prefix" ]]; then
             __shapeshift_render_elements["$method"]=""
-            asyncJob $method __shapeshift_async_callback
+            asyncJob ${method//$__shapeshift_async_prefix/} __shapeshift_async_callback
         else
             __shapeshift_render_elements["$method"]=$(eval "$method")
         fi

@@ -1,4 +1,4 @@
-function async_git_branch() {
+function git_branch() {
     branch=$(git symbolic-ref -q HEAD || git name-rev --name-only --no-undefined --always HEAD) 2> /dev/null
     if [[ $branch ]]; then
         git_where="${branch/(refs\/heads|tags)\//}"
@@ -6,8 +6,8 @@ function async_git_branch() {
     fi
 }
 
-function async_git_diffs() {
-    if [[ -z "$(async_git_branch)" ]]; then
+function git_diffs() {
+    if [[ -z "$(git_branch)" ]]; then
         return
     fi
 
@@ -29,8 +29,8 @@ function async_git_diffs() {
     echo "$SHAPESHIFT_GIT_DIFFS"
 }
 
-function async_git_position() {
-    if [[ -z "$(async_git_branch)" ]]; then
+function git_position() {
+    if [[ -z "$(git_branch)" ]]; then
         return
     fi
 
@@ -57,8 +57,8 @@ function async_git_position() {
     echo "$SHAPESHIFT_GIT_POSITION"
 }
 
-function async_git_merging() {
-    if [[ -z "$(async_git_branch)" ]]; then
+function git_merging() {
+    if [[ -z "$(git_branch)" ]]; then
         return
     fi
 
