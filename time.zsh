@@ -1,6 +1,6 @@
 zmodload zsh/datetime
 
-typeset -g timerTimeStamp
+typeset -g __timer_time_stamp
 
 last_command_elapsed_time() {
   local millisecondsElapsed=$(timer_get)
@@ -21,14 +21,14 @@ last_command_elapsed_time() {
 
 timer_get() {
   integer milliseconds
-  (( milliseconds = (EPOCHREALTIME - ${timerTimeStamp:-$EPOCHREALTIME})*1000 ))
+  (( milliseconds = (EPOCHREALTIME - ${__timer_time_stamp:-$EPOCHREALTIME})*1000 ))
   echo $milliseconds
 }
 
 timer_end() {
-  unset timerTimeStamp
+  unset __timer_time_stamp
 }
 
 timer_start() {
-  timerTimeStamp=$EPOCHREALTIME
+  __timer_time_stamp=$EPOCHREALTIME
 }

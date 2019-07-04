@@ -1,18 +1,18 @@
-typeset -gA renderElements
+typeset -gA __shapeshift_render_elements
 
-mypath=${0:a:h}
+__shapeshift_path=${0:a:h}
 
 #common files
-source "$mypath/theme.zsh"
-source "$mypath/color.zsh"
+source "$__shapeshift_path/theme.zsh"
+source "$__shapeshift_path/color.zsh"
 
 #functions
-source "$mypath/async.zsh"
-source "$mypath/time.zsh"
-source "$mypath/git.zsh"
-source "$mypath/dir.zsh"
+source "$__shapeshift_path/async.zsh"
+source "$__shapeshift_path/time.zsh"
+source "$__shapeshift_path/git.zsh"
+source "$__shapeshift_path/dir.zsh"
 
-function PROMPTCMD() {
+function __shapeshift_render() {
     local elements=("${SHAPESHIFT_PROMPT_LEFT_ELEMENTS[@]}")
     local leftSpace=""
     local rightSpace=" "
@@ -23,50 +23,50 @@ function PROMPTCMD() {
         rightSpace=""
     fi
 
-    local FULL=""
+    local full=""
     for method in $elements; do
-        local methodOutput=${renderElements["$method"]}
+        local methodOutput=${__shapeshift_render_elements["$method"]}
         if [[ $methodOutput ]]; then
-          FULL="$FULL$leftSpace$methodOutput$rightSpace"
+          full="$full$leftSpace$methodOutput$rightSpace"
         fi
     done
-    echo "${FULL}"
+    echo "${full}"
 }
 
-function updatePrompt() {
-    PROMPT="$(PROMPTCMD left)"
-    RPROMPT="$(PROMPTCMD right)"
+function __shapeshift_update_prompt() {
+    PROMPT="$(__shapeshift_render left)"
+    RPROMPT="$(__shapeshift_render right)"
 
     zle && zle reset-prompt && zle -R
 }
 
-function asyncCallback() {
-    calledMethod=${1}
-    output=${3}
-    renderElements["$calledMethod"]=$output
-    updatePrompt
+function __shapeshift_async_callback() {
+    local calledMethod=${1}
+    local output=${3}
+    __shapeshift_render_elements["$calledMethod"]=$output
+    __shapeshift_update_prompt
 }
 
 function precmd() {
-    lastCommandStatus=$?
+    __shapeshift_last_command_status=$?
     print
     for method in $SHAPESHIFT_PROMPT_LEFT_ELEMENTS; do
         if [[ $method =~ "^async" ]]; then
-            renderElements["$method"]=""
-            asyncJob $method asyncCallback
+            __shapeshift_render_elements["$method"]=""
+            asyncJob $method __shapeshift_async_callback
         else
-            renderElements["$method"]=$(eval "$method")
+            __shapeshift_render_elements["$method"]=$(eval "$method")
         fi
     done
     for method in $SHAPESHIFT_PROMPT_RIGHT_ELEMENTS; do
         if [[ $method =~ "^async" ]]; then
-            renderElements["$method"]=""
-            asyncJob $method asyncCallback
+            __shapeshift_render_elements["$method"]=""
+            asyncJob $method __shapeshift_async_callback
         else
-            renderElements["$method"]=$(eval "$method")
+            __shapeshift_render_elements["$method"]=$(eval "$method")
         fi
     done
-    updatePrompt
+    __shapeshift_update_prompt
     timer_end
 }
 
@@ -74,4 +74,4 @@ function preexec() {
     timer_start
 }
 
-shapeshift-load
+__shapeshift_load

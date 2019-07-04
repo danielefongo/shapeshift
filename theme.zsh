@@ -1,19 +1,17 @@
-mypath=${0:a:h}
+__shapeshift_config_dir="$HOME/.shapeshift"
+__shapeshift_theme_name="shapeshift.theme"
+__shapeshift_default_file="$__shapeshift_config_dir/default"
 
-configDir="$HOME/.shapeshift"
-themeName="shapeshift.theme"
-defaultFile="$configDir/default"
-
-if [[ ! -d "$configDir" ]]; then
-  mkdir -p "$configDir"
+if [[ ! -d "$__shapeshift_config_dir" ]]; then
+  mkdir -p "$__shapeshift_config_dir"
 fi
 
-function shapeshift-load() {
-    source "$mypath/properties"
+function __shapeshift_load() {
+    source "$__shapeshift_path/properties"
 
-    if [[ -f "$defaultFile" ]]; then
-      local chosenRepo=$(cat $defaultFile)
-      local themeFile="$configDir/$chosenRepo/$themeName"
+    if [[ -f "$__shapeshift_default_file" ]]; then
+      local chosenRepo=$(cat $__shapeshift_default_file)
+      local themeFile="$__shapeshift_config_dir/$chosenRepo/$__shapeshift_theme_name"
 
       if [[ -f "$themeFile" ]]; then
         source "$themeFile"
@@ -21,74 +19,73 @@ function shapeshift-load() {
     fi
 }
 
-function shape-shift() {
+function __shapeshift_set() {
   local repo=$1
 
-  if [[ -z $repo ]]; then
-    rm "$defaultFile" 2>/dev/null
-  elif [[ -d "$configDir/$repo" ]]; then
-    shapeshift-set $repo
-  else
-    shapeshift-import $repo
-  fi
-
-  shapeshift-load
-}
-
-
-function shape-reshape() {
-  find "$configDir" -mindepth 2 -maxdepth 2 -type d | sed -E 's/.*\.shapeshift\///' | while read repo; do
-  (
-    cd "$configDir/$repo"
-    git fetch &>/dev/null
-
-    UPSTREAM=${1:-'@{u}'}
-    LOCAL=$(git rev-parse @)
-    REMOTE=$(git rev-parse "$UPSTREAM")
-    BASE=$(git merge-base @ "$UPSTREAM")
-
-    if [ $LOCAL != $REMOTE -a $LOCAL = $BASE ]; then
-      git pull &>/dev/null
-      echo "$repo updated."
-    fi
-  )
-  done
-
-  shapeshift-load
-}
-
-function shapeshift-set() {
-  local repo=$1
-
-  local themeFile="$configDir/$repo/$themeName"
+  local themeFile="$__shapeshift_config_dir/$repo/$__shapeshift_theme_name"
 
   if [[ -f "$themeFile" ]]; then
-    echo $repo > "$defaultFile"
+    echo $repo > "$__shapeshift_default_file"
   else
     echo "Not existing theme"
     return
   fi
 }
 
-function shapeshift-import() {
+function __shapeshift_import() {
   local repo=$1
   (
-    if [[ ! -d $configDir/$repo ]]; then
-      git clone "https://github.com/$repo" "$configDir/$repo" &>/dev/null
+    if [[ ! -d $__shapeshift_config_dir/$repo ]]; then
+      git clone "https://github.com/$repo" "$__shapeshift_config_dir/$repo" &>/dev/null
       if [[ $? -ne 0 ]]; then
         echo "Not a valid repo"
         return
       fi
     fi
 
-    if [[ ! -f "$configDir/$repo/$themeName" ]]; then
+    if [[ ! -f "$__shapeshift_config_dir/$repo/$__shapeshift_theme_name" ]]; then
       echo "Not a valid theme"
-      rm -rf "$configDir/$repo"
+      rm -rf "$__shapeshift_config_dir/$repo"
       return
     fi
 
-    shapeshift-set $repo
+    __shapeshift_set $repo
   )
+}
+
+function shape-shift() {
+  local repo=$1
+
+  if [[ -z $repo ]]; then
+    rm "$__shapeshift_default_file" 2>/dev/null
+  elif [[ -d "$__shapeshift_config_dir/$repo" ]]; then
+    __shapeshift_set $repo
+  else
+    __shapeshift_import $repo
+  fi
+
+  __shapeshift_load
+}
+
+function shape-reshape() {
+  find "$__shapeshift_config_dir" -mindepth 2 -maxdepth 2 -type d | sed -E 's/.*\.shapeshift\///' | while read repo; do
+  (
+    cd "$__shapeshift_config_dir/$repo"
+    git fetch &>/dev/null
+
+    local upstream=${1:-'@{u}'}
+    local local=$(git rev-parse @)
+    local remote=$(git rev-parse "$upstream")
+    local base=$(git merge-base @ "$upstream")
+
+    if [ $local != $remote -a $local = $base ]; then
+      git pull &>/dev/null
+      echo "$repo updated."
+    fi
+  )
+  done
+
+  __shapeshift_load
 }
 
 if declare -f antigen > /dev/null; then

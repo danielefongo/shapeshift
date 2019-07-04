@@ -1,16 +1,16 @@
 zmodload zsh/zpty
 zmodload zsh/system
-typeset -gA asyncJobs
+typeset -gA __async_jobs
 
-lockfile="/tmp/async_${RANDOM}${RANDOM}${RANDOM}"
-touch $lockfile
+__async_lockfile="/tmp/async_${RANDOM}${RANDOM}${RANDOM}"
+touch $__async_lockfile
 
-function asyncHandler() {
+function __async_handler() {
   local buffer=""
   while zpty -r asynced line; do
     buffer+="$line"
   done
-  eval "${buffer//$'\015'}"
+  eval "${buffer//$'\015'}" 2>/dev/null
   zpty -w locking "unlock"
 }
 
@@ -21,13 +21,13 @@ function asyncJob {
   shift
   local arguments="$@"
 
-  function async() {
-    job=$($fun $arguments)
+  function __async() {
+    local job=$($fun $arguments)
     local exitStatus=$?
     if [[ "$callback" ]]; then
     {
       local asyncLock
-      zsystem flock -f asyncLock $lockfile
+      zsystem flock -f asyncLock $__async_lockfile
 
       zpty -w asynced "$callback \"$fun\" \"$exitStatus\" \"$job\""
       kill -s WINCH $$
@@ -38,9 +38,9 @@ function asyncJob {
     fi
   }
 
-  kill -9 $asyncJobs["$fun"] 2>/dev/null
-  async &!
-  asyncJobs["$fun"]="$!"
+  kill -9 $__async_jobs["$fun"] 2>/dev/null
+  __async &!
+  __async_jobs["$fun"]="$!"
 }
 
 zpty -d asynced 2>/dev/null
@@ -48,7 +48,7 @@ zpty -b asynced cat
 zpty -d locking 2>/dev/null
 zpty locking cat
 
-trap 'asyncHandler' WINCH
+trap '__async_handler' WINCH
 function zshexit() {
-  rm $lockfile 2>/dev/null
+  rm $__async_lockfile 2>/dev/null
 }

@@ -36,7 +36,7 @@ function colorizeFromStatus() {
     koText="%B${koText}%b"
   fi
 
-  if [[ $lastCommandStatus -eq 0 ]]; then
+  if [[ $__shapeshift_last_command_status -eq 0 ]]; then
     print -n "%F{$okColor}${okText}%f"
   else
     print -n "%F{$koColor}${koText}%f"
