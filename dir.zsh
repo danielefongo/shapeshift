@@ -11,14 +11,11 @@ function prompt_dir() {
 
     local truncated="$(echo "${current%/*}/")"
 
-    if [[ "${truncated}" == "/" || "${last}" == "~" ]]; then
-        truncated=""
-    else
-        truncated=$(colorize "$truncated" $SHAPESHIFT_TRUNCATED_DIR_COLOR $SHAPESHIFT_TRUNCATED_DIR_BOLD)
+    if [[ "${truncated}" != "/" && "${last}" != "~" ]]; then
+        colorize "$truncated" $SHAPESHIFT_TRUNCATED_DIR_COLOR $SHAPESHIFT_TRUNCATED_DIR_BOLD
     fi
 
-    last=$(colorize "$last" $SHAPESHIFT_LAST_FOLDER_DIR_COLOR $SHAPESHIFT_LAST_FOLDER_DIR_BOLD)
-    echo "$truncated$last"
+    colorize "$last" $SHAPESHIFT_LAST_FOLDER_DIR_COLOR $SHAPESHIFT_LAST_FOLDER_DIR_BOLD
 }
 
 function prompt_arrow() {
