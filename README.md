@@ -34,6 +34,8 @@ antigen bundle danielefongo/shapeshift
 Every element showed on the prompt can be customized by changing properties. You can do it by adding an assignment after the sourcing or the `antigen apply` command. The default properties that can be changed are the following:
 
 ```
+SHAPESHIFT_NEWLINE_AFTER_COMMAND=true
+
 SHAPESHIFT_PROMPT_LEFT_ELEMENTS=(last_command_elapsed_seconds prompt_dir prompt_arrow)
 SHAPESHIFT_PROMPT_RIGHT_ELEMENTS=(async_git_position async_git_merging async_git_diffs async_git_branch)
 

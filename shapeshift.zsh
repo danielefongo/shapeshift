@@ -50,7 +50,11 @@ function __shapeshift_async_callback() {
 
 function precmd() {
     __shapeshift_last_command_status=$?
-    print
+
+    if [[ $SHAPESHIFT_NEWLINE_AFTER_COMMAND == true ]]; then
+        print
+    fi
+
     for method in $SHAPESHIFT_PROMPT_LEFT_ELEMENTS; do
         if [[ $method =~ "^$__shapeshift_async_prefix" ]]; then
             __shapeshift_render_elements["$method"]=""
