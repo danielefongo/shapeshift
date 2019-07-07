@@ -1,6 +1,12 @@
 # shapeshift
 
-shapeshift is an extremely customizable prompt inspired by [indresorhus/pure](https://github.com/sindresorhus/pure).
+shapeshift is an extremely customizable prompt inspired by [sindresorhus/pure](https://github.com/sindresorhus/pure).
+
+<p align="center">
+  <a href="https://www.youtube.com/watch?v=HFoeg4JSTPo">
+    <img alt="shapeshift prompt" src="https://media.giphy.com/media/eIrzPwzRjpfwES6CKD/source.gif" width="600">
+  </a>
+</p>
 
 ## Getting started
 
