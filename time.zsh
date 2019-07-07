@@ -16,7 +16,7 @@ last_command_elapsed_time() {
   (( minutes > 0 )) && approxTime="${minutes}m"
   (( hours > 0 )) && approxTime="${hours}h"
 
-  colorize "$approxTime" $SHAPESHIFT_LAST_COMMAND_ELAPSED_SECONDS_COLOR $SHAPESHIFT_LAST_COMMAND_ELAPSED_SECONDS_BOLD
+  colorize "$approxTime" $SHAPESHIFT_LAST_COMMAND_ELAPSED_TIME_COLOR $SHAPESHIFT_LAST_COMMAND_ELAPSED_TIME_BOLD
 }
 
 timer_get() {
