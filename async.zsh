@@ -13,7 +13,7 @@ function __async_handler() {
   zpty -w locking "unlock"
 }
 
-function asyncJob {
+function async_job {
   local fun="$1"
   local callback="$2"
   shift

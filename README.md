@@ -115,10 +115,10 @@ You can use the `colorize` function inside a segment function to echo a colorize
 colorize <text> <color> <bold>
 ```
 
-You can also use `colorizeFromStatus` function inside a segment function to echo a colorized text based on the status of the last command. The signature is the following:
+You can also use `colorize_from_status` function inside a segment function to echo a colorized text based on the status of the last command. The signature is the following:
 
 ```
-colorizeFromStatus <ok-text> <ok-color> <ok-bold> <ko-text> <ko-color> <ko-bold>
+colorize_from_status <ok-text> <ok-color> <ok-bold> <ko-text> <ko-color> <ko-bold>
 ```
 
 Where bold can be `true` or `false`.

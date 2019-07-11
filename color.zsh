@@ -18,7 +18,7 @@ function colorize() {
   print -n "%F{$color}${text}%f"
 }
 
-function colorizeFromStatus() {
+function colorize_from_status() {
   local okText="$1"
   local okColor="$2"
   local okBold=${3}
