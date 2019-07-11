@@ -3,7 +3,6 @@ zmodload zsh/system
 typeset -gA __async_jobs
 
 __async_lockfile="/tmp/async_${RANDOM}${RANDOM}${RANDOM}"
-touch $__async_lockfile
 
 function __async_handler() {
   local buffer=""
@@ -27,6 +26,7 @@ function asyncJob {
     if [[ "$callback" ]]; then
     {
       local asyncLock
+      touch $__async_lockfile
       zsystem flock -f asyncLock $__async_lockfile
 
       zpty -w asynced "$callback \"$fun\" \"$exitStatus\" \"$job\""
