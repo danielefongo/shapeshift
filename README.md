@@ -42,6 +42,9 @@ Every element showed on the prompt can be customized by changing properties. You
 ```
 SHAPESHIFT_NEWLINE_AFTER_COMMAND=true
 
+SHAPESHIFT_LS_COLORS=(boldcyan magenta green default red grey grey)
+SHAPESHIFT_LS_COLORS_ENABLED=true
+
 SHAPESHIFT_PROMPT_LEFT_ELEMENTS=(last_command_elapsed_seconds prompt_dir prompt_arrow)
 SHAPESHIFT_PROMPT_RIGHT_ELEMENTS=(async_git_position async_git_merging async_git_diffs async_git_branch)
 
@@ -106,6 +109,32 @@ function sleeping_function() {
 
 PROMPT_LEFT_ELEMENTS=(async_sleeping_function prompt_dir prompt_arrow)
 ```
+
+### Colorized ls
+
+Shapeshift comes with colorized `ls`. To customize the showed colors you can set the `SHAPESHIFT_LS_COLORS` list to define colors for:
+
+- 1° element: directory
+- 2° element: symbolic link
+- 3° element: socket
+- 4° element: pipe
+- 5° element: executable
+- 6° element: block special
+- 7° element: character special
+
+The possible colors are the following:
+
+- default
+- black, boldblack
+- red, boldred
+- green, boldgreen
+- orange, boldorange
+- blue, boldblue
+- magenta, boldmagenta
+- cyan, boldcyan
+- grey, boldgrey
+
+Any wrong color will be replaced with the default one.
 
 ### Colorize text
 

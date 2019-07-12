@@ -2,6 +2,7 @@ __shapeshift_path=${0:a:h}
 __shapeshift_async_prefix="async_"
 
 #common files
+source "$__shapeshift_path/ls.zsh"
 source "$__shapeshift_path/theme.zsh"
 source "$__shapeshift_path/color.zsh"
 source "$__shapeshift_path/async.zsh"
@@ -16,6 +17,8 @@ function precmd() {
     __shapeshift_last_command_status=$?
 
     reset_results
+    
+    __shapeshift_ls_update
     
     __shapeshift_print_newline_if_enabled
 
@@ -78,6 +81,14 @@ function __shapeshift_exec_elements() {
             exec_sync $method
         fi
     done
+}
+
+function __shapeshift_ls_update() {
+    if [[ $SHAPESHIFT_LS_COLORS_ENABLED == true ]]; then
+        color_ls_set
+    else
+        color_ls_unset
+    fi
 }
 
 __shapeshift_load

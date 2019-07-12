@@ -1,5 +1,8 @@
 SHAPESHIFT_NEWLINE_AFTER_COMMAND=true
 
+SHAPESHIFT_LS_COLORS=(boldcyan magenta green default red grey grey)
+SHAPESHIFT_LS_COLORS_ENABLED=true
+
 SHAPESHIFT_PROMPT_LEFT_ELEMENTS=(last_command_elapsed_time prompt_dir prompt_arrow)
 SHAPESHIFT_PROMPT_RIGHT_ELEMENTS=(async_git_position async_git_merging async_git_diffs async_git_branch)
 
