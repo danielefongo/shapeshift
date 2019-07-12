@@ -6,6 +6,10 @@ __color_ls_default_ls_colors=$LS_COLORS
 __color_ls_default_alias=$(alias ls || echo "ls")
 
 function color_ls_set() {
+    if [[ -z "$SHAPESHIFT_LS_COLORS" ]]; then
+        return
+    fi
+
     local -A lscolors
     lscolors=(default x black a red b green c yellow d blue e magenta f cyan g grey h boldblack A  boldred B  boldgreen C  boldyellow D  boldblue E  boldmagenta F  boldcyan G  boldgrey H)
 
