@@ -110,7 +110,7 @@ function sleeping_function() {
 PROMPT_LEFT_ELEMENTS=(async_sleeping_function prompt_dir prompt_arrow)
 ```
 
-### Colorized ls
+### Colorized ls
 
 Shapeshift comes with colorized `ls`. To customize the showed colors you can set the `SHAPESHIFT_LS_COLORS` list to define colors for:
 
