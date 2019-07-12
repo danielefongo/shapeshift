@@ -128,7 +128,7 @@ The possible colors are the following:
 - black, boldblack
 - red, boldred
 - green, boldgreen
-- orange, boldorange
+- yellow, boldyellow
 - blue, boldblue
 - magenta, boldmagenta
 - cyan, boldcyan
