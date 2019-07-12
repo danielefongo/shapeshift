@@ -89,9 +89,9 @@ function shape-reshape() {
 }
 
 if declare -f antigen > /dev/null; then
-  fpath+="$mypath/_shape-shift"
+  fpath+="$__shapeshift_path/_shape-shift"
 else
-  source "$mypath/_shape-shift"
+  source "$__shapeshift_path/_shape-shift"
   autoload -U +X compinit && compinit
   compdef _shape-shift shape-shift
 fi
