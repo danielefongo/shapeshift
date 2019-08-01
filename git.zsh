@@ -26,7 +26,7 @@ function git_diffs() {
         SHAPESHIFT_GIT_DIFFS="$SHAPESHIFT_GIT_DIFFS$staged"
     fi
 
-    echo "$SHAPESHIFT_GIT_DIFFS"
+    colorize "$SHAPESHIFT_GIT_DIFFS"
 }
 
 function git_position() {
@@ -54,7 +54,7 @@ function git_position() {
         SHAPESHIFT_GIT_POSITION="${detached}"
     fi
 
-    echo "$SHAPESHIFT_GIT_POSITION"
+    colorize "$SHAPESHIFT_GIT_POSITION"
 }
 
 function git_merging() {
