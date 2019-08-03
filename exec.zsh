@@ -20,9 +20,8 @@ function result_for() {
 }
 
 function reset_results() {
-    for output in $__jobs_outputs; do
-        __jobs_outputs["$method"]=""
-    done
+    __jobs_outputs=()
+    __jobs_callbacks=()
 }
 
 function __execAsync_callback() {
