@@ -48,9 +48,13 @@ function __shapeshift_import() {
       rm -rf "$__shapeshift_config_dir/$repo"
       return
     fi
-
-    __shapeshift_set $repo
   )
+}
+
+function __shapeshift_themes() {
+  if [[ -d "$__shapeshift_config_dir" ]]; then
+    find "$__shapeshift_config_dir" -mindepth 2 -maxdepth 2 -type d | sed -E 's/.*\.shapeshift\///'
+  fi
 }
 
 function shape-shift() {
@@ -58,12 +62,23 @@ function shape-shift() {
 
   if [[ -z $repo ]]; then
     rm "$__shapeshift_default_file" 2>/dev/null
-  elif [[ -d "$__shapeshift_config_dir/$repo" ]]; then
-    __shapeshift_set $repo
   else
-    __shapeshift_import $repo
+    set -A __shapeshift_repo_names $(__shapeshift_themes | grep -e "/$repo$")
+
+    case ${#__shapeshift_repo_names[@]} in
+      0 ) ;;
+      1 ) repo=${__shapeshift_repo_names[1]};;
+      * ) echo "duplicated, use one of the following:"
+          echo "- ${(j:\n- :)__shapeshift_repo_names}"
+          return;;
+    esac
+
+    if [[ ! -d "$__shapeshift_config_dir/$repo" ]]; then
+      __shapeshift_import $repo
+    fi
   fi
 
+  __shapeshift_set $repo
   __shapeshift_load
 }
 
