@@ -15,8 +15,6 @@ source "$__shapeshift_path/dir.zsh"
 
 function precmd() {
     __shapeshift_last_command_status=$?
-
-    reset_results
     
     __shapeshift_ls_update
     
@@ -57,10 +55,10 @@ function __shapeshift_render_left() {
 function __shapeshift_render_right() {
     local full=""
     for method in $SHAPESHIFT_PROMPT_RIGHT_ELEMENTS; do
-        
         local methodOutput=$(result_for ${method//async_})
+
         if [[ $methodOutput ]]; then
-          full="$full $methodOutput"
+          full="$full$methodOutput "
         fi
     done
 

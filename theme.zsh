@@ -17,6 +17,8 @@ function __shapeshift_load() {
         source "$themeFile"
       fi
     fi
+
+    reset_results
 }
 
 function __shapeshift_set() {

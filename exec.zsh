@@ -4,7 +4,11 @@ typeset -gA __jobs_callbacks
 function exec_async() {
     local method=$1
     local callback=$2
-    __jobs_outputs["$method"]=""
+
+    if [[ $SHAPESHIFT_RESET_ASYNC_OUTPUTS_BEFORE_UPDATING == true ]]; then
+        __jobs_outputs["$method"]=""
+    fi
+
     __jobs_callbacks["$method"]="$callback"
     async_job ${method//$__shapeshift_async_prefix/} __execAsync_callback
 }

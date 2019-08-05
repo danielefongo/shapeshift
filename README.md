@@ -40,6 +40,8 @@ antigen bundle danielefongo/shapeshift
 Every element showed on the prompt can be customized by changing properties. You can do it by adding an assignment after the sourcing or the `antigen apply` command. The default properties that can be changed are the following:
 
 ```
+SHAPESHIFT_RESET_ASYNC_OUTPUTS_BEFORE_UPDATING=false
+
 SHAPESHIFT_NEWLINE_AFTER_COMMAND=true
 
 SHAPESHIFT_LS_COLORS=(boldcyan magenta green default red grey grey)
