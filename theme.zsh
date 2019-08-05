@@ -27,8 +27,8 @@ function __shapeshift_set() {
   if [[ -f "$themeFile" ]]; then
     echo $repo > "$__shapeshift_default_file"
   else
-    echo "Not existing theme"
-    return
+    echo "Not a valid theme"
+    return 1
   fi
 }
 
@@ -39,14 +39,14 @@ function __shapeshift_import() {
       git clone "https://github.com/$repo" "$__shapeshift_config_dir/$repo" &>/dev/null
       if [[ $? -ne 0 ]]; then
         echo "Not a valid repo"
-        return
+        return 1
       fi
     fi
 
     if [[ ! -f "$__shapeshift_config_dir/$repo/$__shapeshift_theme_name" ]]; then
       echo "Not a valid theme"
       rm -rf "$__shapeshift_config_dir/$repo"
-      return
+      return 1
     fi
   )
 }
@@ -59,6 +59,7 @@ function __shapeshift_themes() {
 
 function shape-shift() {
   local repo=$1
+  local importStatus=0
 
   if [[ -z $repo ]]; then
     rm "$__shapeshift_default_file" 2>/dev/null
@@ -70,15 +71,19 @@ function shape-shift() {
       1 ) repo=${__shapeshift_repo_names[1]};;
       * ) echo "duplicated, use one of the following:"
           echo "- ${(j:\n- :)__shapeshift_repo_names}"
-          return;;
+          return 1;;
     esac
 
     if [[ ! -d "$__shapeshift_config_dir/$repo" ]]; then
       __shapeshift_import $repo
+      importStatus=$?
+    fi
+
+    if [[ $importStatus -eq 0 ]]; then
+      __shapeshift_set $repo
     fi
   fi
 
-  __shapeshift_set $repo
   __shapeshift_load
 }
 
