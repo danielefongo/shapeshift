@@ -156,7 +156,7 @@ Where bold can be `true` or `false`.
 
 ### Themes
 
-You can define your own custom theme by creating a repo on github with a file named `shapeshift.theme` in the root and containing all the customizations needed (see this [theme](https://github.com/shapeshift-zsh/fish) for example).
+You can define your own custom theme by creating a repo on github with a file named `shapeshift.theme` in the root and containing all the customizations needed (go [here](https://github.com/shapeshift-zsh) to check out some themes).
 
 You can then import your theme by using the command `shapeshift-import <user>/<repo>`.
 
