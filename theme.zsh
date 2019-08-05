@@ -50,6 +50,8 @@ function __shapeshift_import() {
       rm -rf "$__shapeshift_config_dir/$repo"
       return 1
     fi
+
+    echo "Theme $repo imported"
   )
 }
 
