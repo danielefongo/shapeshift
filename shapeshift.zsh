@@ -1,36 +1,46 @@
+SHAPESHIFT_VERSION=1
+
 __shapeshift_path=${0:a:h}
 __shapeshift_async_prefix="async_"
 
 #common files
-source "$__shapeshift_path/ls.zsh"
-source "$__shapeshift_path/theme.zsh"
-source "$__shapeshift_path/color.zsh"
-source "$__shapeshift_path/lock.zsh"
-source "$__shapeshift_path/async.zsh"
-source "$__shapeshift_path/exec.zsh"
+source "$__shapeshift_path/utils/ls.zsh"
+source "$__shapeshift_path/utils/color.zsh"
+source "$__shapeshift_path/utils/lock.zsh"
+source "$__shapeshift_path/utils/async.zsh"
+source "$__shapeshift_path/utils/exec.zsh"
+source "$__shapeshift_path/utils/changes.zsh"
 
 #segment functions
-source "$__shapeshift_path/time.zsh"
-source "$__shapeshift_path/git.zsh"
-source "$__shapeshift_path/dir.zsh"
+source "$__shapeshift_path/segments/time.zsh"
+source "$__shapeshift_path/segments/git.zsh"
+source "$__shapeshift_path/segments/dir.zsh"
 
-function precmd() {
-    __shapeshift_last_command_status=$?
-    
-    __shapeshift_ls_update
-    
-    __shapeshift_print_newline_if_enabled
+#theme
+source "$__shapeshift_path/utils/theme.zsh"
 
-    __shapeshift_exec_elements $SHAPESHIFT_PROMPT_LEFT_ELEMENTS
-    __shapeshift_exec_elements $SHAPESHIFT_PROMPT_RIGHT_ELEMENTS
+function __shapeshift_init() {
+    function precmd() {
+        __shapeshift_last_command_status=$?
 
-    __shapeshift_update_prompt
-    
-    timer_end
-}
+        __shapeshift_ls_update
 
-function preexec() {
-    timer_start
+        __shapeshift_print_newline_if_enabled
+
+        __shapeshift_exec_elements $SHAPESHIFT_PROMPT_LEFT_ELEMENTS
+        __shapeshift_exec_elements $SHAPESHIFT_PROMPT_RIGHT_ELEMENTS
+
+        __shapeshift_update_prompt
+
+        timer_end
+    }
+
+    function preexec() {
+        timer_start
+    }
+
+    async_init
+    __shapeshift_load
 }
 
 function __shapeshift_update_prompt() {
@@ -90,5 +100,5 @@ function __shapeshift_ls_update() {
     fi
 }
 
-__shapeshift_load
-async_init
+__shapeshift_change_log
+__shapeshift_init

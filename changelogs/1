@@ -1,0 +1,7 @@
+This is the first changelog, so there is no important things to say.
+I just want to thank you for using shapeshift zsh prompt! =)
+
+PS: If you are using antigen with cache, maybe you will have noticed a terrible alert by antigen.
+Don't worry, this wont bother you anymore! Just run this command and everything will be ok!
+
+# rm -rf ~/.zcompdump && antigen reset
