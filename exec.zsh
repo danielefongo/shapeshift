@@ -1,16 +1,12 @@
 typeset -gA __jobs_outputs
-typeset -gA __jobs_callbacks
 
 function exec_async() {
     local method=$1
     local callback=$2
 
-    if [[ $SHAPESHIFT_RESET_ASYNC_OUTPUTS_BEFORE_UPDATING == true ]]; then
-        __jobs_outputs["$method"]=""
-    fi
+    __exec_reset_output $method
 
-    __jobs_callbacks["$method"]="$callback"
-    async_job ${method//$__shapeshift_async_prefix/} __execAsync_callback
+    async_job ${method//$__shapeshift_async_prefix/} __exec_async_callback
 }
 
 function exec_sync() {
@@ -25,13 +21,18 @@ function result_for() {
 
 function reset_results() {
     __jobs_outputs=()
-    __jobs_callbacks=()
 }
 
-function __execAsync_callback() {
+function __exec_async_callback() {
     local calledMethod=${1}
     local output=${3}
-    local callback=$__jobs_callbacks["$calledMethod"]
     __jobs_outputs["$calledMethod"]=$output
     __shapeshift_update_prompt
+}
+
+function __exec_reset_output() {
+    local method="$1"
+    if [[ $SHAPESHIFT_RESET_ASYNC_OUTPUTS_BEFORE_UPDATING == true ]]; then
+        __jobs_outputs["$method"]=""
+    fi
 }

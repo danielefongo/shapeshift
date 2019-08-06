@@ -5,6 +5,7 @@ __shapeshift_async_prefix="async_"
 source "$__shapeshift_path/ls.zsh"
 source "$__shapeshift_path/theme.zsh"
 source "$__shapeshift_path/color.zsh"
+source "$__shapeshift_path/lock.zsh"
 source "$__shapeshift_path/async.zsh"
 source "$__shapeshift_path/exec.zsh"
 
@@ -90,3 +91,4 @@ function __shapeshift_ls_update() {
 }
 
 __shapeshift_load
+async_init
