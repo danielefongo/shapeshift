@@ -50,15 +50,28 @@ function __shapeshift_import() {
       rm -rf "$__shapeshift_config_dir/$repo"
       return 1
     fi
-
-    echo "Theme $repo imported"
   )
 }
 
 function __shapeshift_themes() {
-  if [[ -d "$__shapeshift_config_dir" ]]; then
-    find "$__shapeshift_config_dir" -mindepth 2 -maxdepth 2 -type d | sed -E 's/.*\.shapeshift\///'
-  fi
+  (
+    if [[ -d "$__shapeshift_config_dir" ]]; then
+      cd "$__shapeshift_config_dir"
+      find . -mindepth 2 -maxdepth 2 -type d | sed -E 's/\.\///'
+    fi
+  )
+}
+
+function __shapeshift_unique_theme() {
+  set -A __shapeshift_repo_names $(__shapeshift_themes | grep -e "/$1$")
+
+  case ${#__shapeshift_repo_names[@]} in
+    0 ) ;;
+    1 ) repo=${__shapeshift_repo_names[1]};;
+    * ) echo "duplicated, use one of the following:"
+        echo "- ${(j:\n- :)__shapeshift_repo_names}"
+        return 1;;
+  esac
 }
 
 function shape-shift() {
@@ -68,15 +81,7 @@ function shape-shift() {
   if [[ -z $repo ]]; then
     rm "$__shapeshift_default_file" 2>/dev/null
   else
-    set -A __shapeshift_repo_names $(__shapeshift_themes | grep -e "/$repo$")
-
-    case ${#__shapeshift_repo_names[@]} in
-      0 ) ;;
-      1 ) repo=${__shapeshift_repo_names[1]};;
-      * ) echo "duplicated, use one of the following:"
-          echo "- ${(j:\n- :)__shapeshift_repo_names}"
-          return 1;;
-    esac
+    __shapeshift_unique_theme $repo || return
 
     if [[ ! -d "$__shapeshift_config_dir/$repo" ]]; then
       __shapeshift_import $repo
@@ -92,22 +97,22 @@ function shape-shift() {
 }
 
 function shape-reshape() {
-  find "$__shapeshift_config_dir" -mindepth 2 -maxdepth 2 -type d | sed -E 's/.*\.shapeshift\///' | while read repo; do
   (
-    cd "$__shapeshift_config_dir/$repo"
-    git fetch &>/dev/null
+    __shapeshift_themes | while read repo; do
+      cd "$__shapeshift_config_dir/$repo"
+      git fetch &>/dev/null
 
-    local upstream=${1:-'@{u}'}
-    local local=$(git rev-parse @)
-    local remote=$(git rev-parse "$upstream")
-    local base=$(git merge-base @ "$upstream")
+      local upstream=${1:-'@{u}'}
+      local local=$(git rev-parse @)
+      local remote=$(git rev-parse "$upstream")
+      local base=$(git merge-base @ "$upstream")
 
-    if [ $local != $remote -a $local = $base ]; then
-      git pull &>/dev/null
-      echo "$repo updated."
-    fi
+      if [ $local != $remote -a $local = $base ]; then
+        git pull &>/dev/null
+        echo "$repo updated."
+      fi
+    done
   )
-  done
 
   __shapeshift_load
 }
