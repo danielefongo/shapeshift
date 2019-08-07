@@ -3,7 +3,7 @@ zmodload zsh/datetime
 typeset -g __timer_time_stamp
 
 last_command_elapsed_time() {
-  local millisecondsElapsed=$(timer_get)
+  local millisecondsElapsed=$(timer_get last_command)
 
   local hours=$(( millisecondsElapsed / 1000 / 60 / 60 % 24 ))
   local minutes=$(( millisecondsElapsed / 1000 / 60 % 60 ))
@@ -17,18 +17,4 @@ last_command_elapsed_time() {
   (( hours > 0 )) && approxTime="${hours}h"
 
   colorize "$approxTime" $SHAPESHIFT_LAST_COMMAND_ELAPSED_TIME_COLOR $SHAPESHIFT_LAST_COMMAND_ELAPSED_TIME_BOLD
-}
-
-timer_get() {
-  integer milliseconds
-  (( milliseconds = (EPOCHREALTIME - ${__timer_time_stamp:-$EPOCHREALTIME})*1000 ))
-  echo $milliseconds
-}
-
-timer_end() {
-  unset __timer_time_stamp
-}
-
-timer_start() {
-  __timer_time_stamp=$EPOCHREALTIME
 }

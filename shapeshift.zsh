@@ -7,6 +7,7 @@ source "$__shapeshift_path/utils/color.zsh"
 source "$__shapeshift_path/utils/lock.zsh"
 source "$__shapeshift_path/utils/async.zsh"
 source "$__shapeshift_path/utils/exec.zsh"
+source "$__shapeshift_path/utils/time.zsh"
 
 # segment functions
 source "$__shapeshift_path/segments/time.zsh"
@@ -28,11 +29,11 @@ function precmd() {
 
     __shapeshift_update_prompt
     
-    timer_end
+    timer_stop last_command
 }
 
 function preexec() {
-    timer_start
+    timer_start last_command
 }
 
 function __shapeshift_update_prompt() {
