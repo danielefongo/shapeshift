@@ -1,7 +1,7 @@
 function git_branch() {
     [ __is_git_folder ] || return
     branch=$(git symbolic-ref -q HEAD || git name-rev --name-only --no-undefined --always HEAD) 2> /dev/null
-    colorize "${branch/(refs\/heads|tags)\//}" $SHAPESHIFT_GIT_BRANCH_COLOR $SHAPESHIFT_GIT_BRANCH_BOLD
+    colorize "${branch/(refs\/heads|tags)\//}" "$SHAPESHIFT_GIT_BRANCH_COLOR" "$SHAPESHIFT_GIT_BRANCH_BOLD"
 }
 
 function git_diffs() {
@@ -11,20 +11,20 @@ function git_diffs() {
     diffs+="$(git_diffs_untracked)"
     diffs+="$(git_diffs_modified)"
     diffs+="$(git_diffs_added)"
-    
-    colorize "$diffs"
+
+    print -n "$diffs"
 }
 
 function git_position() {
     [ $(git_branch) ] || return
 
     local position=""
-    
+
     __git_position_append $(git_position_ahead)
     __git_position_append $(git_position_behind)
     __git_position_append $(git_position_detached)
 
-    colorize $position
+    print -n $position
 }
 
 function git_diffs_untracked() {
