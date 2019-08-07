@@ -35,8 +35,10 @@ test_prompt_dir_full_length() {
     mkdir -p "foo/foo/foo/foo/foooo"
     cd "foo/foo/foo/foo/foooo"
 
+    echo $(pwd)
+
     SHAPESHIFT_DIR_LENGTH=100
-    
+
     actual=$(prompt_dir)
 
     full=$(print -P "%~")
