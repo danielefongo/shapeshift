@@ -59,7 +59,7 @@ function __shapeshift_render_right() {
         local methodOutput=$(result_for ${method//async_})
 
         if [[ $methodOutput ]]; then
-          full="$full$methodOutput "
+          full="$full $methodOutput"
         fi
     done
 
@@ -90,5 +90,5 @@ function __shapeshift_ls_update() {
     fi
 }
 
-__shapeshift_load
 async_init
+__shapeshift_load
