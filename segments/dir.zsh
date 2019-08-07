@@ -1,6 +1,5 @@
 function prompt_dir() {
-    integer shortDirLength
-    ((shortDirLength = SHAPESHIFT_DIR_LENGTH ))
+    integer shortDirLength=SHAPESHIFT_DIR_LENGTH
 
     if [[ $shortDirLength -lt 1 ]]; then
         return
