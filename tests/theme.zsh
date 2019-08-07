@@ -10,7 +10,7 @@ oneTimeSetUp() {
 }
 
 setUp() {
-    source theme.zsh
+    source utils/theme.zsh
     
     mkdir foo
     cd foo

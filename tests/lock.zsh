@@ -7,7 +7,7 @@ setopt shwordsplit
 SHUNIT_PARENT=$0
 
 oneTimeSetUp() {  
-    source lock.zsh
+    source utils/lock.zsh
 }
 
 oneTimeTearDown() {

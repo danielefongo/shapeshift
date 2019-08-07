@@ -6,7 +6,7 @@ setopt shwordsplit
 SHUNIT_PARENT=$0
 
 oneTimeSetUp() {  
-  source exec.zsh
+  source utils/exec.zsh
 }
 
 # Tests

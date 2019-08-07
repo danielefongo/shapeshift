@@ -10,7 +10,7 @@ typeset -gA locked_lock
 typeset -gA unlocked_lock
 
 setUp() {
-    source async.zsh
+    source utils/async.zsh
 }
 
 tearDown() {

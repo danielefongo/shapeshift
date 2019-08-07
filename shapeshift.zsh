@@ -1,18 +1,20 @@
 __shapeshift_path=${0:a:h}
 __shapeshift_async_prefix="async_"
 
-#common files
-source "$__shapeshift_path/ls.zsh"
-source "$__shapeshift_path/theme.zsh"
-source "$__shapeshift_path/color.zsh"
-source "$__shapeshift_path/lock.zsh"
-source "$__shapeshift_path/async.zsh"
-source "$__shapeshift_path/exec.zsh"
+# common files 
+source "$__shapeshift_path/utils/ls.zsh"
+source "$__shapeshift_path/utils/color.zsh"
+source "$__shapeshift_path/utils/lock.zsh"
+source "$__shapeshift_path/utils/async.zsh"
+source "$__shapeshift_path/utils/exec.zsh"
 
-#segment functions
-source "$__shapeshift_path/time.zsh"
-source "$__shapeshift_path/git.zsh"
-source "$__shapeshift_path/dir.zsh"
+# segment functions
+source "$__shapeshift_path/segments/time.zsh"
+source "$__shapeshift_path/segments/git.zsh"
+source "$__shapeshift_path/segments/dir.zsh"
+
+# theme
+source "$__shapeshift_path/utils/theme.zsh"
 
 function precmd() {
     __shapeshift_last_command_status=$?
