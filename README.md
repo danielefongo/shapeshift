@@ -1,5 +1,7 @@
 # shapeshift
 
+[![Build Status](https://travis-ci.com/danielefongo/shapeshift.svg?branch=master)](https://travis-ci.com/danielefongo/shapeshift)
+
 shapeshift is an extremely customizable prompt inspired by [sindresorhus/pure](https://github.com/sindresorhus/pure).
 
 <p align="center">
