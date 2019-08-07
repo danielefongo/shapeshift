@@ -1,7 +1,3 @@
-zmodload zsh/datetime
-
-typeset -g __timer_time_stamp
-
 last_command_elapsed_time() {
   local millisecondsElapsed=$(timer_get last_command)
 
@@ -16,5 +12,5 @@ last_command_elapsed_time() {
   (( minutes > 0 )) && approxTime="${minutes}m"
   (( hours > 0 )) && approxTime="${hours}h"
 
-  colorize "$approxTime" $SHAPESHIFT_LAST_COMMAND_ELAPSED_TIME_COLOR $SHAPESHIFT_LAST_COMMAND_ELAPSED_TIME_BOLD
+  colorize "$approxTime" "$SHAPESHIFT_LAST_COMMAND_ELAPSED_TIME_COLOR" "$SHAPESHIFT_LAST_COMMAND_ELAPSED_TIME_BOLD"
 }
