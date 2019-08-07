@@ -163,14 +163,18 @@ test_unique_utility_gives_list_of_duplicated_names() {
     createAnotherExistingTheme
 
     local actual=$(__shapeshift_unique_theme existingTheme)
-    local expected="duplicated, use one of the following:
-- user2/existingTheme
-- user/existingTheme"
 
-    assertEquals "$expected" "$actual"
+    assertContains "$actual" "duplicated, use one of the following"
+    assertContains "$actual" "user2/existingTheme"
+    assertContains "$actual" "user/existingTheme"
 }
 
 # Utilities
+
+assertContains() {
+    local output=$(echo "$1" | grep "$2" | wc -l)
+    assertTrue "[ $output -ge 1 ]"
+}
 
 createExistingTheme() {
     mkdir -p "user/existingTheme"
