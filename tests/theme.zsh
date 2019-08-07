@@ -155,7 +155,7 @@ test_unique_utility_does_not_set_repo_if_it_not_exist() {
     local repo=""
     __shapeshift_unique_theme existingTheme
 
-    assertEquals "" "$repo"
+    assertNull "$repo"
 }
 
 test_unique_utility_gives_list_of_duplicated_names() {

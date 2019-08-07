@@ -14,6 +14,12 @@ oneTimeTearDown() {
     rm -f "$locked_file"
 }
 
+setUp() {
+    __locks=()
+}
+
+# Tests
+
 test_create_lock() {
     lock_create aBeautifulLock
     
@@ -26,6 +32,10 @@ test_verify_lock_existence() {
     assertTrue "lock_exists aBeautifulLock"
 }
 
+test_verify_lock_inexistence() {    
+    assertFalse "lock_exists aBeautifulLock"
+}
+
 test_lock_properly() {
     lock_create mylock
 
@@ -34,10 +44,10 @@ test_lock_properly() {
     writeToLockedFile second &!
 
     sleep 0.5
-    assertEquals "$(cat $locked_file)" "first"
+    assertEquals "first" "$(cat $locked_file)"
 
     sleep 0.5
-    assertEquals "$(cat $locked_file)" "second"
+    assertEquals "second" "$(cat $locked_file)"
 }
 
 # Utilities

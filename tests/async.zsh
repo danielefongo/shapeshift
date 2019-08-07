@@ -35,7 +35,7 @@ test_kills_previous_job_when_running_the_same_job_again() {
     local newPid=$__async_jobs["sleepyJob"]
 
     assertFalse "kill -0 $oldPid"
-    assertNotEquals "$newPid" "$oldPid"
+    assertNotEquals "$oldPid" "$newPid"
 }
 
 test_fails_to_do_async_job_when_not_initialized() {
@@ -92,7 +92,7 @@ test_handler_calls_callback_properly() {
 # Utilities
 
 assertContains() {
-    local output=$(echo "$1" | grep "$2" | wc -l | bc)
+    local output=$(echo "$1" | grep "$2" | wc -l)
     assertTrue "[ $output -ge 1 ]"
 }
 

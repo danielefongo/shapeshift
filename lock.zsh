@@ -13,7 +13,6 @@ function lock_create() {
 
 function lock_exists() {
     [[ $__locks["$1"] ]] || return 1
-    return 0
 }
 
 function lock_lock() {

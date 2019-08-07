@@ -16,8 +16,8 @@ test_set_color_ls() {
   
   color_ls_set
 
-  assertEquals "$LSCOLORS" "xxaxbxcxdxexfx"
-  assertEquals "$LS_COLORS" "di=0:ln=8:so=31:pi=32:ex=33:bd=34:cd=35"
+  assertEquals "xxaxbxcxdxexfx" "$LSCOLORS"
+  assertEquals "di=0:ln=8:so=31:pi=32:ex=33:bd=34:cd=35" "$LS_COLORS"
 }
 
 test_set_color_ls_bold() {
@@ -25,8 +25,8 @@ test_set_color_ls_bold() {
   
   color_ls_set
 
-  assertEquals "$LSCOLORS" "xxAxBxCxDxExFx"
-  assertEquals "$LS_COLORS" "di=0:ln=8;1:so=31;1:pi=32;1:ex=33;1:bd=34;1:cd=35;1"
+  assertEquals "xxAxBxCxDxExFx" "$LSCOLORS"
+  assertEquals "di=0:ln=8;1:so=31;1:pi=32;1:ex=33;1:bd=34;1:cd=35;1" "$LS_COLORS"
 }
 
 test_set_color_ls_alias() {
