@@ -1,6 +1,6 @@
-#compdef _shape-shift shape-shift
+#compdef _shape-destroy shape-destroy
 
-_shape-shift() {
+_shape-destroy() {
     local list="$(__shapeshift_theme_suggestions)"
 
     _arguments -C \

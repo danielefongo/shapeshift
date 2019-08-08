@@ -64,6 +64,20 @@ function __shapeshift_themes() {
   )
 }
 
+function __shapeshift_theme_suggestions() {
+  for repoFullName in $(__shapeshift_themes); do
+        [[ $repoFullName =~ '^.*/(.*)' ]] && local repoName=$match[1]
+
+        if [[ $(__shapeshift_themes | grep -e "\/$repoName$" | wc -l | bc) -eq 1 ]]; then
+            list+="$repoName "
+        else
+            list+="$repoFullName "
+        fi
+    done
+
+    echo $list
+}
+
 function __shapeshift_unique_theme() {
   set -A __shapeshift_repo_names $(__shapeshift_themes | grep -e "/$1$")
 
@@ -96,6 +110,22 @@ function shape-shift() {
   fi
 
   __shapeshift_load
+}
+
+function shape-destroy() {
+  local repo=$1
+  [ $repo ] || return
+  __shapeshift_unique_theme $repo || return
+
+  rm -rf "$__shapeshift_config_dir/$repo"
+  echo "Theme $repo removed"
+
+  local setRepo=$(cat $__shapeshift_default_file 2>/dev/null)
+
+  if [ "$setRepo" = "$repo" ]; then
+    rm "$__shapeshift_default_file" 2>/dev/null
+    __shapeshift_load
+  fi
 }
 
 function shape-reshape() {

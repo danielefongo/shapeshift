@@ -11,16 +11,14 @@ oneTimeSetUp() {
 
 setUp() {
     source utils/theme.zsh
-    
-    mkdir foo
-    cd foo
-    __shapeshift_config_dir="."
+
+    mkdir -p foo
+    __shapeshift_config_dir="./foo"
     __shapeshift_theme_name="theme"
-    __shapeshift_default_file="default"
+    __shapeshift_default_file="./foo/default"
 }
 
 tearDown() {
-    cd ..
     rm -rf foo
 }
 
@@ -28,6 +26,8 @@ tearDown() {
 
 test_shift_to_default_when_no_repo_is_provided() {
     __shapeshift_load() {;}
+    setTheme randomTheme
+
     shape-shift
 
     assertTrue "[ ! -f $__shapeshift_default_file ]"
@@ -36,17 +36,20 @@ test_shift_to_default_when_no_repo_is_provided() {
 test_shift_does_not_load_when_not_existing_repo_is_provided() {
     __shapeshift_load() {fail;}
     __shapeshift_unique_theme() {return 1;}
-    shape-shift invalid &>/dev/null
+
+    shape-shift invalid 1>/dev/null
 }
 
 test_shift_loads_existing_repo() {
-    __shapeshift_load() {;}
+    local loadCalled
+    __shapeshift_load() {loadCalled=true;}
     __shapeshift_set() {;}
     __shapeshift_import() {fail;}
-    
+
     createExistingTheme
 
-    shape-shift existingTheme &>/dev/null
+    shape-shift existingTheme 1>/dev/null
+    assertTrue "$loadCalled"
 }
 
 test_shift_imports_valid_repo() {
@@ -55,11 +58,45 @@ test_shift_imports_valid_repo() {
     __shapeshift_load() {;}
     __shapeshift_import() {importCalled=true;}
     __shapeshift_set() {setCalled=true;}
-    
-    shape-shift newTheme &>/dev/null
+
+    shape-shift newTheme 1>/dev/null
 
     assertTrue "$importCalled"
     assertTrue "$setCalled"
+}
+
+test_destroy_removes_valid_repo() {
+    __shapeshift_load() {fail;}
+    createExistingTheme
+
+    shape-destroy "existingTheme" 1>/dev/null
+
+    assertTrue "[ ! -d $__shapeshift_config_dir/user/existingTheme ]"
+}
+
+test_destroy_removes_actually_set_repo() {
+    local loadCalled;
+    __shapeshift_load() {loadCalled=true;}
+    createExistingTheme
+    setTheme "user/existingTheme"
+
+    shape-destroy "user/existingTheme" 1>/dev/null
+
+    assertTrue "[ ! -f $__shapeshift_default_file ]"
+    assertTrue "$loadCalled"
+}
+
+test_destroy_does_nothing_if_repo_is_not_provided() {
+    __shapeshift_load() {fail;}
+
+    shape-destroy 1>/dev/null
+}
+
+test_destroy_does_nothing_if_repo_is_not_valid() {
+    __shapeshift_load() {fail;}
+    __shapeshift_unique_theme() {return 1;}
+
+    shape-destroy 1>/dev/null
 }
 
 test_reshape_updates_theme() {
@@ -73,7 +110,7 @@ test_reshape_updates_theme() {
     __shapeshift_load() {;}
 
     createExistingTheme
-    
+
     local actual=$(shape-reshape)
 
     assertEquals "user/existingTheme updated." "$actual"
@@ -108,9 +145,9 @@ test_set_utility_updates_default_file() {
 
 test_import_utility_imports_valid_repo() {
     local git() { return 0; }
-    
+
     createExistingTheme
-    
+
     local actual=$(__shapeshift_import user/existingTheme)
 
     assertEquals "Theme user/existingTheme imported" "$actual"
@@ -118,7 +155,7 @@ test_import_utility_imports_valid_repo() {
 
 test_import_utility_handles_not_existing_repo() {
     local git() { return 1; }
-    
+
     local actual=$(__shapeshift_import any)
 
     assertEquals "Not a valid repo" "$actual"
@@ -126,7 +163,7 @@ test_import_utility_handles_not_existing_repo() {
 
 test_import_utility_handles_invalid_repo() {
     local git() { return 0; }
-    
+
     createWrongTheme
 
     local actual=$(__shapeshift_import any)
@@ -136,7 +173,7 @@ test_import_utility_handles_invalid_repo() {
 
 test_themes_utility_gives_themes_list() {
     createExistingTheme
-    
+
     local actual=$(__shapeshift_themes)
 
     assertEquals "user/existingTheme" "$actual"
@@ -176,19 +213,23 @@ assertContains() {
     assertTrue "[ $output -ge 1 ]"
 }
 
+setTheme() {
+    echo $1 > $__shapeshift_default_file
+}
+
 createExistingTheme() {
-    mkdir -p "user/existingTheme"
-    echo "SOURCED=true" > "user/existingTheme/$__shapeshift_theme_name"
+    mkdir -p "$__shapeshift_config_dir/user/existingTheme"
+    echo "SOURCED=true" > "$__shapeshift_config_dir/user/existingTheme/$__shapeshift_theme_name"
 }
 
 createAnotherExistingTheme() {
-    mkdir -p "user2/existingTheme"
-    touch "user2/existingTheme/$__shapeshift_theme_name"
+    mkdir -p "$__shapeshift_config_dir/user2/existingTheme"
+    touch "$__shapeshift_config_dir/user2/existingTheme/$__shapeshift_theme_name"
 }
 
 createWrongTheme() {
-    mkdir -p "user/wrongTheme"
-    touch "user/wrongTheme/wrongName"
+    mkdir -p "$__shapeshift_config_dir/user/wrongTheme"
+    touch "$__shapeshift_config_dir/user/wrongTheme/wrongName"
 }
 
 # Run
