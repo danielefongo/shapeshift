@@ -51,7 +51,7 @@ test_shift_loads_existing_repo() {
     mock __shapeshift_set
     mock __shapeshift_load
 
-    shape-shift invalid
+    shape-shift theme
 
     verify_mock_calls __shapeshift_load 1
 }
@@ -62,6 +62,49 @@ test_reshape_updates_theme() {
     mock __shapeshift_load
 
     shape-reshape
+}
+
+test_destroy_removes_a_valid_repo() {
+    mock __shapeshift_load
+    mock __shapeshift_unique_theme repo="theme"
+    mock __shapeshift_delete_theme assertEquals "theme" "\$1"
+    mock __shapeshift_actual_theme echo "setTheme"
+
+    shape-destroy "theme" 1>/dev/null
+
+    verify_mock_calls __shapeshift_delete_theme 1
+    verify_mock_calls __shapeshift_load 0
+}
+
+test_destroy_resets_default_if_removing_actually_set_theme() {
+    mock __shapeshift_load
+    mock __shapeshift_unique_theme
+    mock __shapeshift_delete_theme
+    mock __shapeshift_actual_theme echo "theme"
+    mock __shapeshift_delete_default
+
+    shape-destroy "theme" 1>/dev/null
+
+    verify_mock_calls __shapeshift_delete_theme 1
+    verify_mock_calls __shapeshift_delete_default 1
+    verify_mock_calls __shapeshift_load 1
+}
+
+test_destroy_does_nothing_if_repo_is_not_provided() {
+    mock __shapeshift_unique_theme
+
+    shape-destroy 1>/dev/null
+
+    verify_mock_calls __shapeshift_unique_theme 0
+}
+
+test_destroy_does_nothing_if_repo_is_not_valid() {
+    mock __shapeshift_unique_theme return 1
+    mock __shapeshift_delete_theme
+
+    shape-destroy 1>/dev/null
+
+    verify_mock_calls __shapeshift_delete_theme 0
 }
 
 # Utility Functions Tests
@@ -120,10 +163,11 @@ test_import_utility_handles_not_existing_repo() {
 
 test_import_utility_handles_invalid_repo() {
     mock git createWrongTheme
+    mock __shapeshift_delete_theme assertEquals "any" "\$1"
 
-    local actual=$(__shapeshift_import any)
+    __shapeshift_import any 1>/dev/null
 
-    assertEquals "Not a valid theme" "$actual"
+    verify_mock_calls __shapeshift_delete_theme 1
 }
 
 test_themes_utility_gives_themes_list() {
@@ -202,6 +246,7 @@ test_suggestions_utility_gives_partial_repo_names_if_theme_names_are_unique() {
 
     assertEquals "theme differentTheme" "$actual"
 }
+
 # Utilities
 
 assertContains() {

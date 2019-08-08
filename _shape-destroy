@@ -1,0 +1,11 @@
+#compdef _shape-destroy shape-destroy
+
+_shape-destroy() {
+    local list="$(__shapeshift_theme_suggestions)"
+
+    _arguments -C \
+        "-h[Show help information]" \
+        "--h[Show help information]" \
+        "1: :($list)" \
+        "*::arg:->args"
+}

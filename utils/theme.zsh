@@ -29,6 +29,22 @@ function shape-reshape() {
   __shapeshift_load
 }
 
+function shape-destroy() {
+  local repo=$1
+
+  [ $repo ] || return
+  __shapeshift_unique_theme $repo || return
+  __shapeshift_delete_theme "$repo"
+  echo "Theme $repo removed"
+
+  local setRepo=$(__shapeshift_actual_theme)
+
+  if [ "$setRepo" = "$repo" ]; then
+    __shapeshift_delete_default
+    __shapeshift_load
+  fi
+}
+
 function __shapeshift_load() {
     source "$__shapeshift_path/properties"
 
@@ -59,23 +75,22 @@ function __shapeshift_set() {
 
 function __shapeshift_import() {
   local repo=$1
-  (
-    [ -d $__shapeshift_config_dir/$repo ] && return
 
-    git clone "https://github.com/$repo" "$__shapeshift_config_dir/$repo" &>/dev/null
-    if [[ $? -ne 0 ]]; then
-      echo "Not a valid repo"
-      return 1
-    fi
+  [ -d $__shapeshift_config_dir/$repo ] && return
 
-    if [[ ! -f "$__shapeshift_config_dir/$repo/$__shapeshift_theme_name" ]]; then
-      echo "Not a valid theme"
-      rm -rf "$__shapeshift_config_dir/$repo"
-      return 1
-    fi
+  git clone "https://github.com/$repo" "$__shapeshift_config_dir/$repo" &>/dev/null
+  if [[ $? -ne 0 ]]; then
+    echo "Not a valid repo"
+    return 1
+  fi
 
-    echo "Theme $repo imported"
-  )
+  if [[ ! -f "$__shapeshift_config_dir/$repo/$__shapeshift_theme_name" ]]; then
+    __shapeshift_delete_theme "$repo"
+    echo "Not a valid theme"
+    return 1
+  fi
+
+  echo "Theme $repo imported"
 }
 
 function __shapeshift_themes() {
@@ -101,6 +116,15 @@ function __shapeshift_unique_theme() {
 
 function __shapeshift_delete_default() {
   rm "$__shapeshift_default_file" 2>/dev/null
+}
+
+function __shapeshift_actual_theme() {
+  cat $__shapeshift_default_file 2>/dev/null
+}
+
+function __shapeshift_delete_theme() {
+  local repo="$1"
+  rm -rf "$__shapeshift_config_dir/$repo" 2>/dev/null
 }
 
 function __shapeshift_update() {
