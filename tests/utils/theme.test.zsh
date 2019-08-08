@@ -181,6 +181,27 @@ test_update_utility_updates_theme() {
     assertEquals "user/existingTheme updated." "$actual"
 }
 
+test_suggestions_utility_gives_full_repo_names_if_theme_names_are_not_unique() {
+    mock __shapeshift_themes "
+        echo user/theme
+        echo user2/theme
+    "
+
+    local actual=$(__shapeshift_theme_suggestions)
+
+    assertEquals "user/theme user2/theme" "$actual"
+}
+
+test_suggestions_utility_gives_partial_repo_names_if_theme_names_are_unique() {
+    mock __shapeshift_themes "
+        echo user/theme
+        echo user2/differentTheme
+    "
+
+    local actual=$(__shapeshift_theme_suggestions)
+
+    assertEquals "theme differentTheme" "$actual"
+}
 # Utilities
 
 assertContains() {

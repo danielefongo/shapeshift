@@ -120,6 +120,20 @@ function __shapeshift_update() {
   )
 }
 
+function __shapeshift_theme_suggestions() {
+  for repoFullName in $(__shapeshift_themes); do
+    [[ $repoFullName =~ '^.*/(.*)' ]] && local repoName=$match[1]
+
+    if [[ $(__shapeshift_themes | grep -e "\/$repoName$" | wc -l | bc) -eq 1 ]]; then
+      list+="$repoName "
+    else
+      list+="$repoFullName "
+    fi
+  done
+
+  echo $list
+}
+
 if declare -f antigen > /dev/null; then
   fpath+="$__shapeshift_path/_shape-shift"
 else
