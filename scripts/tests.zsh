@@ -14,7 +14,7 @@ decorate() {
   print
 }
 
-testFiles="$(find tests -type f -name "*.zsh")"
+testFiles="$(find tests -type f -name "*.test.zsh")"
 for test in $testFiles; do
   decorate "Run $test..."
   eval zsh $test 2>&1

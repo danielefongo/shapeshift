@@ -7,11 +7,12 @@ SHUNIT_PARENT=$0
 
 oneTimeSetUp() {
     __shapeshift_path="$(pwd)"
+    source tests/mock.zsh
 }
 
 setUp() {
     source utils/theme.zsh
-    
+
     mkdir foo
     cd foo
     __shapeshift_config_dir="."
@@ -27,56 +28,54 @@ tearDown() {
 # Tests
 
 test_shift_to_default_when_no_repo_is_provided() {
-    __shapeshift_load() {;}
+    mock __shapeshift_delete_default
+    mock __shapeshift_load
+
     shape-shift
 
-    assertTrue "[ ! -f $__shapeshift_default_file ]"
+    verify_mock_calls __shapeshift_delete_default 1
 }
 
-test_shift_does_not_load_when_not_existing_repo_is_provided() {
-    __shapeshift_load() {fail;}
-    __shapeshift_unique_theme() {return 1;}
-    shape-shift invalid &>/dev/null
+test_shift_does_not_load_when_something_breaks_during_setting_up() {
+    mock __shapeshift_unique_theme return 1
+    mock __shapeshift_load
+
+    shape-shift invalid
+
+    verify_mock_calls __shapeshift_load 0
 }
 
 test_shift_loads_existing_repo() {
-    __shapeshift_load() {;}
-    __shapeshift_set() {;}
-    __shapeshift_import() {fail;}
-    
-    createExistingTheme
+    mock __shapeshift_unique_theme
+    mock __shapeshift_import
+    mock __shapeshift_set
+    mock __shapeshift_load
 
-    shape-shift existingTheme &>/dev/null
-}
+    shape-shift invalid
 
-test_shift_imports_valid_repo() {
-    local importCalled
-    local setCalled
-    __shapeshift_load() {;}
-    __shapeshift_import() {importCalled=true;}
-    __shapeshift_set() {setCalled=true;}
-    
-    shape-shift newTheme &>/dev/null
-
-    assertTrue "$importCalled"
-    assertTrue "$setCalled"
+    verify_mock_calls __shapeshift_load 1
 }
 
 test_reshape_updates_theme() {
-    local git() {
-        case $1 in
-            rev-parse ) echo "$2" ;;
-            merge-base ) echo "@" ;;
-            * ) ;;
-        esac
-    }
-    __shapeshift_load() {;}
+    mock __shapeshift_themes echo "theme"
+    mock __shapeshift_update assertEquals "theme" "\$1"
+    mock __shapeshift_load
+
+    shape-reshape
+}
+
+# Utility Functions Tests
+
+test_load_utility_loads_theme_properly() {
+    mock reset_results
 
     createExistingTheme
-    
-    local actual=$(shape-reshape)
+    echo "user/existingTheme" > "$__shapeshift_default_file"
 
-    assertEquals "user/existingTheme updated." "$actual"
+    __shapeshift_load
+
+    assertTrue "$SOURCED"
+    verify_mock_calls reset_results 1
 }
 
 test_set_utility_handles_invalid_theme() {
@@ -85,17 +84,6 @@ test_set_utility_handles_invalid_theme() {
     local actual=$(__shapeshift_set "user/wrongTheme")
 
     assertEquals "Not a valid theme" "$actual"
-}
-
-test_load_utility_loads_theme_properly() {
-    reset_results() {;}
-
-    createExistingTheme
-    echo "user/existingTheme" > "$__shapeshift_default_file"
-
-    __shapeshift_load
-
-    assertTrue "$SOURCED"
 }
 
 test_set_utility_updates_default_file() {
@@ -107,27 +95,31 @@ test_set_utility_updates_default_file() {
 }
 
 test_import_utility_imports_valid_repo() {
-    local git() { return 0; }
-    
-    createExistingTheme
-    
+    mock git createExistingTheme
+
     local actual=$(__shapeshift_import user/existingTheme)
 
     assertEquals "Theme user/existingTheme imported" "$actual"
 }
 
+test_import_utility_does_not_import_already_present_repo() {
+    createExistingTheme
+
+    local actual=$(__shapeshift_import user/existingTheme)
+
+    assertNull "$actual"
+}
+
 test_import_utility_handles_not_existing_repo() {
-    local git() { return 1; }
-    
+    mock git return 1
+
     local actual=$(__shapeshift_import any)
 
     assertEquals "Not a valid repo" "$actual"
 }
 
 test_import_utility_handles_invalid_repo() {
-    local git() { return 0; }
-    
-    createWrongTheme
+    mock git createWrongTheme
 
     local actual=$(__shapeshift_import any)
 
@@ -136,14 +128,16 @@ test_import_utility_handles_invalid_repo() {
 
 test_themes_utility_gives_themes_list() {
     createExistingTheme
-    
+    createAnotherExistingTheme
+
     local actual=$(__shapeshift_themes)
 
-    assertEquals "user/existingTheme" "$actual"
+    assertContains "$actual" "user/existingTheme"
+    assertContains "$actual" "user2/existingTheme"
 }
 
-test_unique_utility_gives_unique_theme() {
-    createExistingTheme
+test_unique_theme_utility_gives_unique_theme() {
+    mock __shapeshift_themes echo user/existingTheme
 
     local repo=""
     __shapeshift_unique_theme existingTheme
@@ -151,22 +145,40 @@ test_unique_utility_gives_unique_theme() {
     assertEquals "user/existingTheme" "$repo"
 }
 
-test_unique_utility_does_not_set_repo_if_it_not_exist() {
+test_unique_theme_utility_does_not_set_repo_if_it_not_exist() {
+    mock __shapeshift_themes
     local repo=""
-    __shapeshift_unique_theme existingTheme
+
+    __shapeshift_unique_theme aTheme
 
     assertNull "$repo"
 }
 
-test_unique_utility_gives_list_of_duplicated_names() {
-    createExistingTheme
-    createAnotherExistingTheme
+test_unique_theme_utility_gives_list_of_duplicated_names() {
+    mock __shapeshift_themes "
+        echo user/existingTheme
+        echo user2/existingTheme
+    "
 
     local actual=$(__shapeshift_unique_theme existingTheme)
 
     assertContains "$actual" "duplicated, use one of the following"
-    assertContains "$actual" "user2/existingTheme"
     assertContains "$actual" "user/existingTheme"
+    assertContains "$actual" "user2/existingTheme"
+}
+
+test_update_utility_updates_theme() {
+    mock git "case \$1 in
+                rev-parse ) echo "\$2" ;;
+                merge-base ) echo "@" ;;
+                * ) ;;
+            esac"
+
+    createExistingTheme
+
+    local actual=$(__shapeshift_update user/existingTheme)
+
+    assertEquals "user/existingTheme updated." "$actual"
 }
 
 # Utilities

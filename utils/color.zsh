@@ -27,7 +27,6 @@ function colorize_from_status() {
   local koColor="$5"
   local koBold=${6}
 
-
   if [[ $okBold == true ]]; then
     okText="%B${okText}%b"
   fi

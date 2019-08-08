@@ -5,8 +5,10 @@
 setopt shwordsplit
 SHUNIT_PARENT=$0
 
-oneTimeSetUp() {  
+oneTimeSetUp() {
   source utils/exec.zsh
+  source tests/mock.zsh
+  mock __shapeshift_update_prompt
 }
 
 # Tests
@@ -63,8 +65,6 @@ async_job() {
   callback="$2"
   $callback "$fun" "0" "$($fun)"
 }
-
-__shapeshift_update_prompt() {}
 
 # Run
 

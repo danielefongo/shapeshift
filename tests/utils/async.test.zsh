@@ -9,8 +9,18 @@ typeset -gA created_lock
 typeset -gA locked_lock
 typeset -gA unlocked_lock
 
+oneTimeSetUp() {
+    source tests/mock.zsh
+}
+
 setUp() {
     source utils/async.zsh
+    mock myJob echo job
+    mock myCallback
+    mock lock_create
+    mock lock_lock
+    mock lock_unlock
+    mock lock_exists
 }
 
 tearDown() {
@@ -22,7 +32,7 @@ tearDown() {
 test_saves_job_pid() {
     async_job myJob myCallback
     local myPid=$__async_jobs["myJob"]
-    
+
     assertNotNull "$myPid"
 }
 
@@ -39,7 +49,7 @@ test_kills_previous_job_when_running_the_same_job_again() {
 }
 
 test_fails_to_do_async_job_when_not_initialized() {
-    lock_exists() {return 1}
+    mock lock_exists return 1
 
     async_job myJob myCallback
 
@@ -52,20 +62,15 @@ test_calls_all_required_lock_methods() {
     __async myJob myCallback
     sleep 0.5
 
-    assertTrue "[ $created_lock[\"async\"] ]"
-    assertTrue "[ $created_lock[\"handler\"] ]"
-    assertTrue "[ $locked_lock[\"async\"] ]"
-    assertTrue "[ $locked_lock[\"handler\"] ]"
-    assertTrue "[ $unlocked_lock[\"async\"] ]"
-    assertTrue "[ $unlocked_lock[\"handler\"] ]"
+    verify_mock_calls lock_create 2
+    verify_mock_calls lock_lock 3
+    verify_mock_calls lock_unlock 2
 }
 
 test_calls_async_handler_with_right_params() {
     local actual
-    spyHandler() {
-        zpty -r asynced actual
-    }
-    trap 'spyHandler' WINCH
+    mock __async_handler zpty -r asynced actual
+    trap '__async_handler' WINCH
 
     __async myJob myCallback &!
     sleep 0.5
@@ -74,19 +79,12 @@ test_calls_async_handler_with_right_params() {
 }
 
 test_handler_calls_callback_properly() {
-    local actual
-    local expected="output"
-    mockFunction() {
-        actual=$1
-    }
-    trap '__async_handler' WINCH
+    async_init
 
-    zpty -w asynced "mockFunction $expected"
+    mock mockFunction assertEquals "output" "\$1"
+
+    zpty -w asynced "mockFunction output"
     kill -s WINCH $$
-
-    sleep 0.5
-
-    assertEquals "$expected" "$actual"
 }
 
 # Utilities
@@ -95,31 +93,6 @@ assertContains() {
     local output=$(echo "$1" | grep "$2" | wc -l)
     assertTrue "[ $output -ge 1 ]"
 }
-
-myJob() {
-    echo "job"
-}
-
-myCallback() {
-}
-
-lock_create() {
-    created_lock["$1"]=true
-}
-
-lock_lock() {
-    locked_lock["$1"]=true
-}
-
-lock_unlock() {
-    unlocked_lock["$1"]=true
-}
-
-lock_exists() {
-    return 0
-}
-
-lock_destroy() {;}
 
 # Run
 

@@ -5,8 +5,13 @@
 setopt shwordsplit
 SHUNIT_PARENT=$0
 
+oneTimeSetUp() {
+    source tests/mock.zsh
+}
+
 setUp() {
     source segments/dir.zsh
+    mock colorize print -n '\$1'
 }
 
 tearDown() {
@@ -16,8 +21,9 @@ tearDown() {
 # Tests
 
 test_concatenates_truncated_dir_and_last_folder() {
-    __prompt_last_folder() {echo "last";}
-    __prompt_truncated_dir() {echo "/truncated/";}
+    mock __prompt_last_folder echo "last"
+    mock __prompt_truncated_dir echo "/truncated/"
+
     SHAPESHIFT_DIR_LENGTH=1
 
     actual=$(prompt_dir)
@@ -34,8 +40,8 @@ test_shows_empty_dir_when_length_is_zero() {
 }
 
 test_does_not_show_truncated_dir_when_is_home() {
-    __prompt_last_folder() {echo "~";}
-    __prompt_truncated_dir() {echo "/mypath/";}
+    mock __prompt_last_folder echo "\~"
+    mock __prompt_truncated_dir echo "/mypath/"
     SHAPESHIFT_DIR_LENGTH=1
 
     actual=$(prompt_dir)
@@ -44,8 +50,8 @@ test_does_not_show_truncated_dir_when_is_home() {
 }
 
 test_does_not_show_truncated_dir_when_is_root() {
-    __prompt_last_folder() {echo "/";}
-    __prompt_truncated_dir() {echo "/";}
+    mock __prompt_last_folder echo "/"
+    mock __prompt_truncated_dir echo "/"
     SHAPESHIFT_DIR_LENGTH=1
 
     actual=$(prompt_dir)
@@ -54,11 +60,10 @@ test_does_not_show_truncated_dir_when_is_root() {
 }
 
 test_truncated_dir_utility_using_short_dir() {
+    mock __prompt_full_dir echo "%~"
+    mock __prompt_long_dir echo "3~"
+    mock __prompt_short_dir echo ".../foo/%1~"
     __prompt_dir_length=1
-
-    __prompt_full_dir() {echo "%~"}
-    __prompt_long_dir() {echo "3~"}
-    __prompt_short_dir() {echo ".../foo/%1~"}
 
     actual=$(__prompt_truncated_dir)
 
@@ -66,21 +71,14 @@ test_truncated_dir_utility_using_short_dir() {
 }
 
 test_truncated_dir_utility_using_full_dir() {
+    mock __prompt_full_dir echo "%~"
+    mock __prompt_long_dir echo "2~"
+    mock __prompt_short_dir echo "\~/foo/%1~"
     __prompt_dir_length=1
-
-    __prompt_full_dir() {echo "%~"}
-    __prompt_long_dir() {echo "2~"}
-    __prompt_short_dir() {echo "~/foo/%1~"}
 
     actual=$(__prompt_truncated_dir)
 
     assertEquals "~/foo/" "$actual"
-}
-
-# Utilities
-
-colorize() {
-    print -n "$1"
 }
 
 # Run

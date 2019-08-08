@@ -6,8 +6,8 @@ setopt shwordsplit
 SHUNIT_PARENT=$0
 
 setUp() {
-    __timers=()
     source utils/time.zsh
+    __timers=()
 }
 
 # Tests
@@ -45,12 +45,10 @@ test_timer_is_equal_to_0_when_stopped() {
 
     sleep 0.1
     timer_stop myTimer
-    
+
     local actual=$(timer_get myTimer)
     assertTrue "[ $actual -eq 0 ]"
 }
-
-# Utilities
 
 # Run
 

@@ -6,6 +6,29 @@ if [[ ! -d "$__shapeshift_config_dir" ]]; then
   mkdir -p "$__shapeshift_config_dir"
 fi
 
+function shape-shift() {
+  local repo=$1
+  local importStatus=0
+
+  if [[ -z $repo ]]; then
+    __shapeshift_delete_default
+  else
+    __shapeshift_unique_theme $repo || return
+    __shapeshift_import $repo || return
+    __shapeshift_set $repo || return
+  fi
+
+  __shapeshift_load
+}
+
+function shape-reshape() {
+  __shapeshift_themes | while read repo; do
+    __shapeshift_update "$repo"
+  done
+
+  __shapeshift_load
+}
+
 function __shapeshift_load() {
     source "$__shapeshift_path/properties"
 
@@ -37,12 +60,12 @@ function __shapeshift_set() {
 function __shapeshift_import() {
   local repo=$1
   (
-    if [[ ! -d $__shapeshift_config_dir/$repo ]]; then
-      git clone "https://github.com/$repo" "$__shapeshift_config_dir/$repo" &>/dev/null
-      if [[ $? -ne 0 ]]; then
-        echo "Not a valid repo"
-        return 1
-      fi
+    [ -d $__shapeshift_config_dir/$repo ] && return
+
+    git clone "https://github.com/$repo" "$__shapeshift_config_dir/$repo" &>/dev/null
+    if [[ $? -ne 0 ]]; then
+      echo "Not a valid repo"
+      return 1
     fi
 
     if [[ ! -f "$__shapeshift_config_dir/$repo/$__shapeshift_theme_name" ]]; then
@@ -76,47 +99,25 @@ function __shapeshift_unique_theme() {
   esac
 }
 
-function shape-shift() {
-  local repo=$1
-  local importStatus=0
-
-  if [[ -z $repo ]]; then
-    rm "$__shapeshift_default_file" 2>/dev/null
-  else
-    __shapeshift_unique_theme $repo || return
-
-    if [[ ! -d "$__shapeshift_config_dir/$repo" ]]; then
-      __shapeshift_import $repo
-      importStatus=$?
-    fi
-
-    if [[ $importStatus -eq 0 ]]; then
-      __shapeshift_set $repo
-    fi
-  fi
-
-  __shapeshift_load
+function __shapeshift_delete_default() {
+  rm "$__shapeshift_default_file" 2>/dev/null
 }
 
-function shape-reshape() {
+function __shapeshift_update() {
+  local repo="$1"
   (
-    __shapeshift_themes | while read repo; do
-      cd "$__shapeshift_config_dir/$repo"
-      git fetch &>/dev/null
+    cd "$__shapeshift_config_dir/$repo"
+    git fetch &>/dev/null
 
-      local upstream=${1:-'@{u}'}
-      local local=$(git rev-parse @)
-      local remote=$(git rev-parse "$upstream")
-      local base=$(git merge-base @ "$upstream")
+    local local=$(git rev-parse @)
+    local remote=$(git rev-parse "@{u}")
+    local base=$(git merge-base @ "@{u}")
 
-      if [ $local != $remote -a $local = $base ]; then
-        git pull &>/dev/null
-        echo "$repo updated."
-      fi
-    done
+    if [ "$local" != "$remote" -a "$local" = "$base" ]; then
+      git pull &>/dev/null
+      echo "$repo updated."
+    fi
   )
-
-  __shapeshift_load
 }
 
 if declare -f antigen > /dev/null; then

@@ -32,10 +32,10 @@ function __async() {
   local exitStatus=$?
 
   lock_lock async
-  
+
   zpty -w asynced "$callback \"$fun\" \"$exitStatus\" \"$job\""
   kill -s WINCH $$
-  
+
   lock_lock handler
   lock_unlock async
 }

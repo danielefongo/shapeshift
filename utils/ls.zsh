@@ -10,27 +10,8 @@ function color_ls_set() {
         return
     fi
 
-    local -A lscolors
-    lscolors=(default x black a red b green c yellow d blue e magenta f cyan g grey h boldblack A  boldred B  boldgreen C  boldyellow D  boldblue E  boldmagenta F  boldcyan G  boldgrey H)
-
-    local -A ls_colors
-    ls_colors=(default 0 black 8 red 31 green 32 yellow 33 blue 34 magenta 35 cyan 36 grey 37 boldblack "8;1" boldred "31;1" boldgreen "32;1" boldyellow "33;1" boldblue "34;1" boldmagenta "35;1" boldcyan "36;1" boldgrey "37;1")
-
-    count=1
-    LSCOLORS=$bsd_pattern
-    for color in $SHAPESHIFT_LS_COLORS; do
-        LSCOLORS=${LSCOLORS//<$count>/${lscolors[$color]-x}}
-        count=$(( count + 1 ))
-    done
-    export LSCOLORS
-
-    count=1
-    LS_COLORS=$non_bsd_pattern
-    for color in $SHAPESHIFT_LS_COLORS; do
-        LS_COLORS=${LS_COLORS//<$count>/${ls_colors[$color]-0}}
-        count=$(( count + 1 ))
-    done
-    export LS_COLORS
+    __color_ls_bsd
+    __color_ls_not_bsd
 
     alias ls="$__color_ls_alias"
 }
@@ -40,6 +21,32 @@ function color_ls_unset() {
     export LS_COLORS=$__color_ls_default_lscolors
 
     alias ls="$__color_ls_default_alias"
+}
+
+function __color_ls_bsd() {
+    local -A lscolors
+    lscolors=(default x black a red b green c yellow d blue e magenta f cyan g grey h boldblack A  boldred B  boldgreen C  boldyellow D  boldblue E  boldmagenta F  boldcyan G  boldgrey H)
+
+    count=1
+    LSCOLORS=$bsd_pattern
+    for color in $SHAPESHIFT_LS_COLORS; do
+        LSCOLORS=${LSCOLORS//<$count>/${lscolors[$color]-x}}
+        count=$(( count + 1 ))
+    done
+    export LSCOLORS
+}
+
+function __color_ls_not_bsd() {
+    local -A ls_colors
+    ls_colors=(default 0 black 8 red 31 green 32 yellow 33 blue 34 magenta 35 cyan 36 grey 37 boldblack "8;1" boldred "31;1" boldgreen "32;1" boldyellow "33;1" boldblue "34;1" boldmagenta "35;1" boldcyan "36;1" boldgrey "37;1")
+
+    count=1
+    LS_COLORS=$non_bsd_pattern
+    for color in $SHAPESHIFT_LS_COLORS; do
+        LS_COLORS=${LS_COLORS//<$count>/${ls_colors[$color]-0}}
+        count=$(( count + 1 ))
+    done
+    export LS_COLORS
 }
 
 __color_ls_alias="ls"
