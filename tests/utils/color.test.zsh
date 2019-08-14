@@ -48,6 +48,13 @@ test_colorize_from_status_ko() {
   assertEquals "colorized" "$expected" "$actual"
 }
 
+test_decolorize_text() {
+  local expected="hello"
+  local actual=$(decolorize "%F{red}%Bhello%b%f" red)
+
+  assertEquals "$expected" "$actual"
+}
+
 # Run
 
 source "shunit2/shunit2"

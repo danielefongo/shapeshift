@@ -18,6 +18,13 @@ function colorize() {
   print -n "%F{$color}${text}%f"
 }
 
+function decolorize() {
+  local INPUT=$1
+  local zero='%([BSUbfksu]|([FK]|){*})'
+  FULL=${(S%%)INPUT//$~zero/}
+  echo $FULL
+}
+
 function colorize_from_status() {
   local okText="$1"
   local okColor="$2"
