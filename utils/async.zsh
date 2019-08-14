@@ -7,7 +7,7 @@ function async_job {
 
   local fun="$1"
 
-  kill -9 $__async_jobs["$fun"] 2>/dev/null
+  kill -TERM $__async_jobs["$fun"] 2>/dev/null
   __async "$@" &!
   __async_jobs["$fun"]="$!"
 }
@@ -19,6 +19,7 @@ function __async_handler() {
   done
   eval "${buffer//$'\015'}" 2>/dev/null
   lock_unlock handler
+  lock_unlock async
 }
 
 function __async() {
@@ -37,7 +38,6 @@ function __async() {
   kill -s WINCH $$
 
   lock_lock handler
-  lock_unlock async
 }
 
 zpty -d asynced 2>/dev/null

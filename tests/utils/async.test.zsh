@@ -37,7 +37,7 @@ test_saves_job_pid() {
 }
 
 test_kills_previous_job_when_running_the_same_job_again() {
-    sleepyJob() {sleep 0.5}
+    sleepyJob() {sleep 1}
 
     async_job sleepyJob myCallback
     local oldPid=$__async_jobs["sleepyJob"]
@@ -85,6 +85,32 @@ test_handler_calls_callback_properly() {
 
     zpty -w asynced "mockFunction output"
     kill -s WINCH $$
+}
+
+test_concurrent_jobs() {
+    function myJob_1() {echo "line"}
+    function myJob_2() {echo "line"}
+    function myJob_3() {echo "line"}
+    function myJob_4() {echo "line"}
+    function myJob_5() {echo "line"}
+    function myJob_6() {echo "line"}
+    function myJob_7() {echo "line"}
+    function myJob_8() {echo "line"}
+    function myJob_9() {echo "line"}
+    function myJob_10() {echo "line"}
+    function myCallback() {echo "something" >> tmpfile}
+    
+    rm -f tmpfile
+    for i in $(seq 1 10); do
+        async_job myJob_$i myCallback
+    done
+
+    sleep 5
+
+    local actual=$(cat tmpfile | wc -l | bc)
+
+    assertEquals "10" "$actual"
+    rm -f tmpfile
 }
 
 # Utilities

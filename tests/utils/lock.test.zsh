@@ -10,12 +10,12 @@ oneTimeSetUp() {
     source utils/lock.zsh
 }
 
-oneTimeTearDown() {
-    rm -f "$locked_file"
-}
-
 setUp() {
     __locks=()
+}
+
+tearDown() {
+    rm -f "$locked_file"
 }
 
 # Tests
@@ -30,6 +30,19 @@ test_verify_lock_existence() {
     lock_create aBeautifulLock
     
     assertTrue "lock_exists aBeautifulLock"
+}
+
+test_verify_lock_active() {
+    lock_create aBeautifulLock
+    lock_lock aBeautifulLock
+    
+    assertTrue "lock_active aBeautifulLock"
+}
+
+test_verify_lock_not_active() {
+    lock_create aBeautifulLock
+    
+    assertFalse "lock_active aBeautifulLock"
 }
 
 test_verify_lock_inexistence() {    
