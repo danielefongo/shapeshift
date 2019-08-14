@@ -7,7 +7,7 @@ function async_job {
 
   local fun="$1"
 
-  kill -TERM $__async_jobs["$fun"] 2>/dev/null
+  kill -9 $__async_jobs["$fun"] 2>/dev/null
   __async "$@" &!
   __async_jobs["$fun"]="$!"
 }
