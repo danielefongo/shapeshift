@@ -6,23 +6,24 @@ setopt shwordsplit
 SHUNIT_PARENT=$0
 
 oneTimeSetUp() {
-    source tests/mock.zsh
+    source segments/dir.zsh
+    source mockz/mockz.zsh
 }
 
 setUp() {
-    source segments/dir.zsh
-    mock colorize print -n '\$1'
+    mock colorize do 'print -n $1'
 }
 
 tearDown() {
     unset SHAPESHIFT_DIR_LENGTH
+    rockall
 }
 
 # Tests
 
 test_concatenates_truncated_dir_and_last_folder() {
-    mock __prompt_last_folder echo "last"
-    mock __prompt_truncated_dir echo "/truncated/"
+    mock __prompt_last_folder do 'echo last'
+    mock __prompt_truncated_dir do 'echo /truncated/'
 
     SHAPESHIFT_DIR_LENGTH=1
 
@@ -40,8 +41,8 @@ test_shows_empty_dir_when_length_is_zero() {
 }
 
 test_does_not_show_truncated_dir_when_is_home() {
-    mock __prompt_last_folder echo "\~"
-    mock __prompt_truncated_dir echo "/mypath/"
+    mock __prompt_last_folder do 'echo \~'
+    mock __prompt_truncated_dir do 'echo /mypath/'
     SHAPESHIFT_DIR_LENGTH=1
 
     actual=$(prompt_dir)
@@ -50,8 +51,8 @@ test_does_not_show_truncated_dir_when_is_home() {
 }
 
 test_does_not_show_truncated_dir_when_is_root() {
-    mock __prompt_last_folder echo "/"
-    mock __prompt_truncated_dir echo "/"
+    mock __prompt_last_folder do 'echo /'
+    mock __prompt_truncated_dir do 'echo /'
     SHAPESHIFT_DIR_LENGTH=1
 
     actual=$(prompt_dir)
@@ -60,9 +61,9 @@ test_does_not_show_truncated_dir_when_is_root() {
 }
 
 test_truncated_dir_utility_using_short_dir() {
-    mock __prompt_full_dir echo "%~"
-    mock __prompt_long_dir echo "3~"
-    mock __prompt_short_dir echo ".../foo/%1~"
+    mock __prompt_full_dir do 'echo %~'
+    mock __prompt_long_dir do 'echo 3~'
+    mock __prompt_short_dir do 'echo .../foo/%1~'
     __prompt_dir_length=1
 
     actual=$(__prompt_truncated_dir)
@@ -71,9 +72,9 @@ test_truncated_dir_utility_using_short_dir() {
 }
 
 test_truncated_dir_utility_using_full_dir() {
-    mock __prompt_full_dir echo "%~"
-    mock __prompt_long_dir echo "2~"
-    mock __prompt_short_dir echo "\~/foo/%1~"
+    mock __prompt_full_dir do 'echo %~'
+    mock __prompt_long_dir do 'echo 2~'
+    mock __prompt_short_dir do 'echo \~/foo/%1~'
     __prompt_dir_length=1
 
     actual=$(__prompt_truncated_dir)

@@ -48,11 +48,11 @@ function shape-destroy() {
 function __shapeshift_load() {
     source "$__shapeshift_path/properties"
 
-    if [[ -f "$__shapeshift_default_file" ]]; then
+    if test -f "$__shapeshift_default_file"; then
       local chosenRepo=$(cat $__shapeshift_default_file)
       local themeFile="$__shapeshift_config_dir/$chosenRepo/$__shapeshift_theme_name"
 
-      if [[ -f "$themeFile" ]]; then
+      if test -f "$themeFile"; then
         source "$themeFile"
       fi
     fi

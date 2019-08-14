@@ -5,8 +5,11 @@
 setopt shwordsplit
 SHUNIT_PARENT=$0
 
-setUp() {
+oneTimeSetUp() {
     source utils/time.zsh
+}
+
+setUp() {
     __timers=()
 }
 

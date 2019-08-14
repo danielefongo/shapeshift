@@ -10,12 +10,12 @@ typeset -gA locked_lock
 typeset -gA unlocked_lock
 
 oneTimeSetUp() {
-    source tests/mock.zsh
+    source utils/async.zsh
+    source mockz/mockz.zsh
 }
 
 setUp() {
-    source utils/async.zsh
-    mock myJob echo job
+    mock myJob do 'echo job'
     mock myCallback
     mock lock_create
     mock lock_lock
@@ -25,6 +25,7 @@ setUp() {
 
 tearDown() {
     sleep 0.5
+    rockall
 }
 
 # Tests
@@ -49,7 +50,7 @@ test_kills_previous_job_when_running_the_same_job_again() {
 }
 
 test_fails_to_do_async_job_when_not_initialized() {
-    mock lock_exists return 1
+    mock lock_exists do 'return 1'
 
     async_job myJob myCallback
 
@@ -62,29 +63,27 @@ test_calls_all_required_lock_methods() {
     __async myJob myCallback
     sleep 0.5
 
-    verify_mock_calls lock_create 2
-    verify_mock_calls lock_lock 3
-    verify_mock_calls lock_unlock 2
+    mock lock_create called 2
+    mock lock_lock called 3
+    mock lock_unlock called 2
 }
 
 test_calls_async_handler_with_right_params() {
-    local actual
-    mock __async_handler zpty -r asynced actual
-    trap '__async_handler' WINCH
-
-    __async myJob myCallback &!
+    mock zpty expect '-w asynced myCallback "myJob" "0" "job"'
+    mock kill
+    
+    __async myJob myCallback
+    
     sleep 0.5
-
-    assertContains "$actual" "myCallback \"myJob\" \"0\" \"job\""
 }
 
 test_handler_calls_callback_properly() {
     async_init
 
-    mock mockFunction assertEquals "output" "\$1"
+    mock mockFunction expect "output"
 
     zpty -w asynced "mockFunction output"
-    kill -s WINCH $$
+    __async_handler
 }
 
 test_concurrent_jobs() {

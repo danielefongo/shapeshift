@@ -6,18 +6,22 @@ setopt shwordsplit
 SHUNIT_PARENT=$0
 
 oneTimeSetUp() {
-    source tests/mock.zsh
-    mock colorize print -n '\$1'
+    source segments/time.zsh
+    source mockz/mockz.zsh
 }
 
 setUp() {
-    source segments/time.zsh
+    mock colorize do 'print -n $1'
+}
+
+tearDown() {
+    rockall
 }
 
 # Tests
 
 test_milliseconds() {
-    mock timer_get echo "1"
+    mock timer_get do 'echo 1'
 
     actual=$(last_command_elapsed_time)
 
@@ -25,7 +29,7 @@ test_milliseconds() {
 }
 
 test_seconds() {
-    mock timer_get echo "1000"
+    mock timer_get do 'echo 1000'
 
     actual=$(last_command_elapsed_time)
 
@@ -33,7 +37,7 @@ test_seconds() {
 }
 
 test_minutes() {
-    mock timer_get echo "60000"
+    mock timer_get do 'echo 60000'
 
     actual=$(last_command_elapsed_time)
 
@@ -41,7 +45,7 @@ test_minutes() {
 }
 
 test_hours() {
-    mock timer_get echo "3600000"
+    mock timer_get do 'echo 3600000'
 
     actual=$(last_command_elapsed_time)
 

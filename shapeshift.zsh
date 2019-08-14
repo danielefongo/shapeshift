@@ -78,7 +78,7 @@ function __shapeshift_print_newline_if_enabled() {
 function __shapeshift_exec_elements() {
     for method in $@; do
         if [[ $method =~ ^async_ ]]; then
-            exec_async ${method//async_/} __shapeshift_update_prompt
+            exec_async ${method//async_/}
         else
             exec_sync $method
         fi

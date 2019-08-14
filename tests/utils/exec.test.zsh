@@ -7,7 +7,7 @@ SHUNIT_PARENT=$0
 
 oneTimeSetUp() {
   source utils/exec.zsh
-  source tests/mock.zsh
+  source mockz/mockz.zsh
   mock __shapeshift_update_prompt
 }
 

@@ -7,7 +7,7 @@ SHUNIT_PARENT=$0
 
 oneTimeSetUp() {
     __shapeshift_path="$(pwd)"
-    source tests/mock.zsh
+    source mockz/mockz.zsh
 }
 
 setUp() {
@@ -23,6 +23,7 @@ setUp() {
 tearDown() {
     cd ..
     rm -rf foo
+    rockall
 }
 
 # Tests
@@ -33,16 +34,16 @@ test_shift_to_default_when_no_repo_is_provided() {
 
     shape-shift
 
-    verify_mock_calls __shapeshift_delete_default 1
+    mock __shapeshift_delete_default called 1
 }
 
 test_shift_does_not_load_when_something_breaks_during_setting_up() {
-    mock __shapeshift_unique_theme return 1
+    mock __shapeshift_unique_theme do 'return 1'
     mock __shapeshift_load
 
     shape-shift invalid
 
-    verify_mock_calls __shapeshift_load 0
+    mock __shapeshift_load called 0
 }
 
 test_shift_loads_existing_repo() {
@@ -53,12 +54,12 @@ test_shift_loads_existing_repo() {
 
     shape-shift theme
 
-    verify_mock_calls __shapeshift_load 1
+    mock __shapeshift_load called 1
 }
 
 test_reshape_updates_theme() {
-    mock __shapeshift_themes echo "theme"
-    mock __shapeshift_update assertEquals "theme" "\$1"
+    mock __shapeshift_themes do 'echo theme'
+    mock __shapeshift_update expect "theme"
     mock __shapeshift_load
 
     shape-reshape
@@ -66,28 +67,28 @@ test_reshape_updates_theme() {
 
 test_destroy_removes_a_valid_repo() {
     mock __shapeshift_load
-    mock __shapeshift_unique_theme repo="theme"
-    mock __shapeshift_delete_theme assertEquals "theme" "\$1"
-    mock __shapeshift_actual_theme echo "setTheme"
+    mock __shapeshift_unique_theme do 'repo=theme'
+    mock __shapeshift_delete_theme expect 'theme'
+    mock __shapeshift_actual_theme
 
     shape-destroy "theme" 1>/dev/null
 
-    verify_mock_calls __shapeshift_delete_theme 1
-    verify_mock_calls __shapeshift_load 0
+    mock __shapeshift_delete_theme called 1
+    mock __shapeshift_load called 0
 }
 
 test_destroy_resets_default_if_removing_actually_set_theme() {
     mock __shapeshift_load
     mock __shapeshift_unique_theme
     mock __shapeshift_delete_theme
-    mock __shapeshift_actual_theme echo "theme"
+    mock __shapeshift_actual_theme do 'echo theme'
     mock __shapeshift_delete_default
 
     shape-destroy "theme" 1>/dev/null
 
-    verify_mock_calls __shapeshift_delete_theme 1
-    verify_mock_calls __shapeshift_delete_default 1
-    verify_mock_calls __shapeshift_load 1
+    mock __shapeshift_delete_theme called 1
+    mock __shapeshift_delete_default called 1
+    mock __shapeshift_load called 1
 }
 
 test_destroy_does_nothing_if_repo_is_not_provided() {
@@ -95,16 +96,16 @@ test_destroy_does_nothing_if_repo_is_not_provided() {
 
     shape-destroy 1>/dev/null
 
-    verify_mock_calls __shapeshift_unique_theme 0
+    mock __shapeshift_unique_theme called 0
 }
 
 test_destroy_does_nothing_if_repo_is_not_valid() {
-    mock __shapeshift_unique_theme return 1
+    mock __shapeshift_unique_theme do 'return 1'
     mock __shapeshift_delete_theme
 
     shape-destroy 1>/dev/null
 
-    verify_mock_calls __shapeshift_delete_theme 0
+    mock __shapeshift_delete_theme called 0
 }
 
 # Utility Functions Tests
@@ -118,7 +119,7 @@ test_load_utility_loads_theme_properly() {
     __shapeshift_load
 
     assertTrue "$SOURCED"
-    verify_mock_calls reset_results 1
+    mock reset_results called 1
 }
 
 test_set_utility_handles_invalid_theme() {
@@ -138,7 +139,7 @@ test_set_utility_updates_default_file() {
 }
 
 test_import_utility_imports_valid_repo() {
-    mock git createExistingTheme
+    mock git do createExistingTheme
 
     local actual=$(__shapeshift_import user/existingTheme)
 
@@ -154,7 +155,7 @@ test_import_utility_does_not_import_already_present_repo() {
 }
 
 test_import_utility_handles_not_existing_repo() {
-    mock git return 1
+    mock git do 'return 1'
 
     local actual=$(__shapeshift_import any)
 
@@ -162,12 +163,12 @@ test_import_utility_handles_not_existing_repo() {
 }
 
 test_import_utility_handles_invalid_repo() {
-    mock git createWrongTheme
+    mock git do createWrongTheme
     mock __shapeshift_delete_theme assertEquals "any" "\$1"
 
     __shapeshift_import any 1>/dev/null
 
-    verify_mock_calls __shapeshift_delete_theme 1
+    mock __shapeshift_delete_theme called 1
 }
 
 test_themes_utility_gives_themes_list() {
@@ -181,7 +182,7 @@ test_themes_utility_gives_themes_list() {
 }
 
 test_unique_theme_utility_gives_unique_theme() {
-    mock __shapeshift_themes echo user/existingTheme
+    mock __shapeshift_themes do 'echo user/existingTheme'
 
     local repo=""
     __shapeshift_unique_theme existingTheme
@@ -199,9 +200,9 @@ test_unique_theme_utility_does_not_set_repo_if_it_not_exist() {
 }
 
 test_unique_theme_utility_gives_list_of_duplicated_names() {
-    mock __shapeshift_themes "
-        echo user/existingTheme
-        echo user2/existingTheme
+    mock __shapeshift_themes do "
+        echo user/existingTheme;
+        echo user2/existingTheme;
     "
 
     local actual=$(__shapeshift_unique_theme existingTheme)
@@ -212,7 +213,7 @@ test_unique_theme_utility_gives_list_of_duplicated_names() {
 }
 
 test_update_utility_updates_theme() {
-    mock git "case \$1 in
+    mock git do "case \$1 in
                 rev-parse ) echo "\$2" ;;
                 merge-base ) echo "@" ;;
                 * ) ;;
@@ -226,9 +227,9 @@ test_update_utility_updates_theme() {
 }
 
 test_suggestions_utility_gives_full_repo_names_if_theme_names_are_not_unique() {
-    mock __shapeshift_themes "
-        echo user/theme
-        echo user2/theme
+    mock __shapeshift_themes do "
+        echo user/theme;
+        echo user2/theme;
     "
 
     local actual=$(__shapeshift_theme_suggestions)
@@ -237,9 +238,9 @@ test_suggestions_utility_gives_full_repo_names_if_theme_names_are_not_unique() {
 }
 
 test_suggestions_utility_gives_partial_repo_names_if_theme_names_are_unique() {
-    mock __shapeshift_themes "
-        echo user/theme
-        echo user2/differentTheme
+    mock __shapeshift_themes do "
+        echo user/theme;
+        echo user2/differentTheme;
     "
 
     local actual=$(__shapeshift_theme_suggestions)

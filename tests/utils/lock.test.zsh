@@ -12,6 +12,7 @@ oneTimeSetUp() {
 
 setUp() {
     __locks=()
+    __locks_state=()
 }
 
 tearDown() {
