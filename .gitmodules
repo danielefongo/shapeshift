@@ -1,0 +1,6 @@
+[submodule "mockz"]
+	path = mockz
+	url = https://github.com/danielefongo/mockz
+[submodule "shunit2"]
+	path = shunit2
+	url = https://github.com/kward/shunit2

@@ -1,12 +1,7 @@
 #!/usr/bin/env zsh
 
-if [ ! -d shunit2 ]; then
-  git clone --single-branch --branch 'v2.1.7' https://github.com/kward/shunit2
-fi
-
-if [ ! -d mockz ]; then
-  git clone https://github.com/danielefongo/mockz
-fi
+git submodule init
+git submodule update
 
 setopt shwordsplit
 
