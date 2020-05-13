@@ -15,7 +15,7 @@ oneTimeSetUp() {
 }
 
 setUp() {
-    mock myJob do 'echo job'
+    myJob() { echo job }
     mock myCallback
     mock lock_create
     mock lock_lock
@@ -38,10 +38,12 @@ test_saves_job_pid() {
 }
 
 test_kills_previous_job_when_running_the_same_job_again() {
+    mock lock_active do "return 0"
     sleepyJob() {sleep 1}
 
     async_job sleepyJob myCallback
     local oldPid=$__async_jobs["sleepyJob"]
+    sleep 0.1
     async_job sleepyJob myCallback
     local newPid=$__async_jobs["sleepyJob"]
 
@@ -61,19 +63,70 @@ test_calls_all_required_lock_methods() {
     async_init
 
     __async myJob myCallback
+    set +e
     sleep 0.5
 
-    mock lock_create called 2
-    mock lock_lock called 3
-    mock lock_unlock called 2
+    mock lock_create called 1
+    mock lock_lock called 1
+    mock lock_unlock called 1
+}
+
+test_does_not_call_lock_methods_when_killing_slow_process() {
+    rm -f tmpfile
+    touch tmpfile
+
+    mock lock_active do "echo 1 >> tmpfile"
+    mock lock_lock do "echo 1 >> tmpfile"
+    mock lock_unlock do "echo 1 >> tmpfile"
+
+    async_init
+    sleepyJob() {sleep 1}
+
+    __async sleepyJob myCallback &
+    process=$!
+
+    sleep 0.1
+    kill -s TERM $process
+
+    calls=$(cat tmpfile | wc -l)
+    rm -rf tmpfile
+
+    mock lock_create called 1
+    assertEquals "0" ${calls}
+}
+
+test_calls_all_lock_methods_if_killed_process_already_locked_resources() {
+    rm -f tmpfile
+    touch tmpfile
+
+    mock lock_unlock do "echo 1 >> tmpfile"
+    mock lock_lock do "echo 1 >> tmpfile"
+    mock lock_active do "echo 1 >> tmpfile; return 1"
+    mock zpty do "sleep 0.2; return 1"
+
+    async_init
+
+    __async myJob myCallback &
+    process=$!
+
+    sleep 0.1
+    kill -s TERM $process
+
+    sleep 0.2
+
+    calls=$(cat tmpfile | wc -l)
+    rm -rf tmpfile
+
+    assertEquals "3" ${calls}
 }
 
 test_calls_async_handler_with_right_params() {
     mock zpty expect '-w asynced myCallback "myJob" "0" "job"'
     mock kill
-    
+
     __async myJob myCallback
-    
+    set +e
+
     sleep 0.5
 }
 
@@ -98,11 +151,12 @@ test_concurrent_jobs() {
     function myJob_9() {echo "line"}
     function myJob_10() {echo "line"}
     function myCallback() {echo "something" >> tmpfile}
-    
+
     rm -f tmpfile
     for i in $(seq 1 10); do
         async_job myJob_$i myCallback
     done
+    set +e
 
     sleep 5
 
