@@ -1,7 +1,7 @@
 __shapeshift_path=${0:a:h}
 __shapeshift_async_prefix="async_"
 
-# common files 
+# common files
 source "$__shapeshift_path/utils/ls.zsh"
 source "$__shapeshift_path/utils/color.zsh"
 source "$__shapeshift_path/utils/lock.zsh"
@@ -22,16 +22,16 @@ function precmd() {
     cache git_branch &>/dev/null
 
     __shapeshift_last_command_status=$?
-    
+
     __shapeshift_ls_update
-    
+
     __shapeshift_print_newline_if_enabled
 
     __shapeshift_exec_elements $SHAPESHIFT_PROMPT_LEFT_ELEMENTS
     __shapeshift_exec_elements $SHAPESHIFT_PROMPT_RIGHT_ELEMENTS
 
     __shapeshift_update_prompt
-    
+
     timer_stop last_command
 }
 

@@ -14,8 +14,8 @@ function cache() {
     __cache_funs["$fun"]=$(declare -f $fun)
     __cache_results["$fun"]=${(q)result}
 
-    eval "$fun() { echo ${(q)result} }"
-    echo ${(q)result}
+    eval "$fun() { echo -n ${(q)result} }"
+    echo -n ${(q)result}
 }
 
 function uncache() {
