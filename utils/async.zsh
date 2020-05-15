@@ -36,13 +36,19 @@ function __async() {
   shift
   local arguments="$@"
 
-  local job=$($fun $arguments)
-  local exitStatus=$?
+  function cb() {
+    jobResult=$(cat <&p)
 
-  lock_lock async
+    lock_lock async
 
-  zpty -w asynced "$callback \"$fun\" \"$exitStatus\" \"$job\""
-  kill -s WINCH $$
+    zpty -w asynced "$callback \"$fun\" \"\" \"$jobResult\""
+    kill -s WINCH $$
+  }
+
+  coproc $fun $arguments
+  wait $!
+
+  cb
 }
 
 zpty -d asynced 2>/dev/null

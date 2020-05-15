@@ -18,6 +18,7 @@ setUp() {
     myJob() { echo job }
     mock myCallback
     mock lock_create
+    mock lock_active
     mock lock_lock
     mock lock_unlock
     mock lock_exists
@@ -26,6 +27,7 @@ setUp() {
 tearDown() {
     sleep 0.5
     rockall
+    set +e
 }
 
 # Tests
@@ -38,7 +40,7 @@ test_saves_job_pid() {
 }
 
 test_kills_previous_job_when_running_the_same_job_again() {
-    mock lock_active do "return 0"
+    mock lock_active do "return 1"
     sleepyJob() {sleep 1}
 
     async_job sleepyJob myCallback
@@ -46,6 +48,8 @@ test_kills_previous_job_when_running_the_same_job_again() {
     sleep 0.1
     async_job sleepyJob myCallback
     local newPid=$__async_jobs["sleepyJob"]
+
+    sleep 0.5
 
     assertFalse "kill -0 $oldPid"
     assertNotEquals "$oldPid" "$newPid"
@@ -75,7 +79,7 @@ test_does_not_call_lock_methods_when_killing_slow_process() {
     rm -f tmpfile
     touch tmpfile
 
-    mock lock_active do "echo 1 >> tmpfile"
+    mock lock_active do "return 1"
     mock lock_lock do "echo 1 >> tmpfile"
     mock lock_unlock do "echo 1 >> tmpfile"
 
@@ -85,7 +89,7 @@ test_does_not_call_lock_methods_when_killing_slow_process() {
     __async sleepyJob myCallback &
     process=$!
 
-    sleep 0.1
+    sleep 0.5
     kill -s TERM $process
 
     calls=$(cat tmpfile | wc -l)
@@ -121,7 +125,7 @@ test_calls_all_lock_methods_if_killed_process_already_locked_resources() {
 }
 
 test_calls_async_handler_with_right_params() {
-    mock zpty expect '-w asynced myCallback "myJob" "0" "job"'
+    mock zpty expect '-w asynced myCallback "myJob" "" "job"'
     mock kill
 
     __async myJob myCallback
@@ -160,7 +164,7 @@ test_concurrent_jobs() {
 
     sleep 5
 
-    local actual=$(cat tmpfile | wc -l | bc)
+    local actual=$(cat tmpfile | wc -l | sed 's/ //g')
 
     assertEquals "10" "$actual"
     rm -f tmpfile
