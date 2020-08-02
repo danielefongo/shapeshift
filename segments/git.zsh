@@ -1,11 +1,13 @@
 function git_branch() {
-    [ __is_git_folder ] || return
+    [ __is_git_folder ] || return 1
     branch=$(git symbolic-ref -q HEAD || git name-rev --name-only --no-undefined --always HEAD) 2> /dev/null
     colorize "${branch/(refs\/heads|tags)\//}" "$SHAPESHIFT_GIT_BRANCH_COLOR" "$SHAPESHIFT_GIT_BRANCH_BOLD"
 }
 
 function git_diffs() {
-    [ $(git_branch) ] || return
+    if ! [ $(git_branch) ]; then
+        __print_empty && return
+    fi
 
     local diffs
     diffs+="$(git_diffs_untracked)"
@@ -16,7 +18,9 @@ function git_diffs() {
 }
 
 function git_position() {
-    [ $(git_branch) ] || return
+    if ! [ $(git_branch) ]; then
+        __print_empty && return
+    fi
 
     local position=""
 
@@ -28,7 +32,9 @@ function git_position() {
 }
 
 function git_diffs_untracked() {
-    [ $(git_branch) ] || return
+    if ! [ $(git_branch) ]; then
+        __print_empty && return
+    fi
 
     if [[ $(git ls-files --other --exclude-standard :/ 2> /dev/null) ]] then
         colorize "$SHAPESHIFT_GIT_DIFF_SYMBOL" "$SHAPESHIFT_GIT_UNTRACKED_COLOR" "$SHAPESHIFT_GIT_UNTRACKED_BOLD"
@@ -36,7 +42,9 @@ function git_diffs_untracked() {
 }
 
 function git_diffs_modified() {
-    [ $(git_branch) ] || return
+    if ! [ $(git_branch) ]; then
+        __print_empty && return
+    fi
 
     if ! git diff --quiet 2> /dev/null; then
         colorize "$SHAPESHIFT_GIT_DIFF_SYMBOL" "$SHAPESHIFT_GIT_MODIFIED_COLOR" "$SHAPESHIFT_GIT_MODIFIED_BOLD"
@@ -44,7 +52,9 @@ function git_diffs_modified() {
 }
 
 function git_diffs_added() {
-    [ $(git_branch) ] || return
+    if ! [ $(git_branch) ]; then
+        __print_empty && return
+    fi
 
     if ! git diff --cached --quiet 2> /dev/null; then
         colorize "$SHAPESHIFT_GIT_DIFF_SYMBOL" "$SHAPESHIFT_GIT_STAGED_COLOR" "$SHAPESHIFT_GIT_STAGED_BOLD"
@@ -52,7 +62,9 @@ function git_diffs_added() {
 }
 
 function git_position_detached() {
-    [ $(git_branch) ] || return
+    if ! [ $(git_branch) ]; then
+        __print_empty && return
+    fi
 
     if ! git symbolic-ref HEAD >/dev/null 2>&1; then
         colorize "$SHAPESHIFT_GIT_DETATCHED" "$SHAPESHIFT_GIT_DETATCHED_COLOR" "$SHAPESHIFT_GIT_DETATCHED_BOLD"
@@ -60,7 +72,9 @@ function git_position_detached() {
 }
 
 function git_position_ahead() {
-    [ $(git_branch) ] || return
+    if ! [ $(git_branch) ]; then
+        __print_empty && return
+    fi
 
     local num_ahead="$(git log --oneline @{u}.. 2> /dev/null | wc -l | tr -d ' ')"
     if [ "$num_ahead" -gt 0 ]; then
@@ -70,7 +84,9 @@ function git_position_ahead() {
 }
 
 function git_position_behind() {
-    [ $(git_branch) ] || return
+    if ! [ $(git_branch) ]; then
+        __print_empty && return
+    fi
 
     local num_behind="$(git log --oneline ..@{u} 2> /dev/null | wc -l | tr -d ' ')"
     if [ "$num_behind" -gt 0 ]; then
@@ -80,7 +96,9 @@ function git_position_behind() {
 }
 
 function git_merging() {
-    [ $(git_branch) ] || return
+    if ! [ $(git_branch) ]; then
+        __print_empty && return
+    fi
 
     local merge_dir="$(git rev-parse --git-dir 2> /dev/null)/MERGE_HEAD"
     if [ -f $merge_dir ]; then
@@ -99,4 +117,8 @@ function __git_position_append() {
 function __is_git_folder() {
     git status -s &>/dev/null
     return $?
+}
+
+function __print_empty() {
+    print -n ""
 }
