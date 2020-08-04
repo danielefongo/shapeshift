@@ -1,8 +1,0 @@
-sudo: true
-language: generic
-before_install:
-  - sudo apt-get install -y zsh
-before_script:
-  - zsh --version
-script:
-  - scripts/tests.zsh
