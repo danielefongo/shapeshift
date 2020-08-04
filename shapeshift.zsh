@@ -19,9 +19,9 @@ source "$__shapeshift_path/segments/dir.zsh"
 source "$__shapeshift_path/utils/theme.zsh"
 
 function precmd() {
-    cache git_branch &>/dev/null
-
     __shapeshift_last_command_status=$?
+
+    cache git_branch &>/dev/null
 
     __shapeshift_ls_update
 
