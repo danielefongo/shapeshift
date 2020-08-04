@@ -13,6 +13,8 @@ decorate() {
   print
 }
 
+export TERM=xterm
+
 testFiles="$(find tests -type f -name "*.test.zsh")"
 for test in $testFiles; do
   decorate "Run $test..."

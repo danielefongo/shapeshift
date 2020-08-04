@@ -1,0 +1,26 @@
+name: CI
+on:
+  push:
+    branches:
+      - master
+      - github-actions
+
+jobs:
+  tests:
+    name: Run tests
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+    steps:
+      - name: init
+        uses: actions/checkout@v2
+      - name: install zsh
+        if: runner.os == 'Linux'
+        run: sudo apt-get update; sudo apt-get install zsh
+      - name: setup git user
+        run: |
+          git config --global user.name ${{ github.event.pusher.name }}
+          git config --global user.email ${{ github.event.pusher.email }}
+      - name: tests
+        run: zsh ./scripts/tests.zsh

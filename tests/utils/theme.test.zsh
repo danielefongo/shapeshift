@@ -8,11 +8,11 @@ SHUNIT_PARENT=$0
 oneTimeSetUp() {
     __shapeshift_path="$(pwd)"
     source mockz/mockz.zsh
+    mock compdef
+    source utils/theme.zsh
 }
 
 setUp() {
-    source utils/theme.zsh
-
     mkdir foo
     cd foo
     __shapeshift_config_dir="."

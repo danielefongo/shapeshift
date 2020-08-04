@@ -32,6 +32,7 @@ tearDown() {
     git reset . &>/dev/null
     git checkout . &>/dev/null
     git checkout master &>/dev/null
+    sleep 1
     cd ..
 }
 
