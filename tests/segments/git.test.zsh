@@ -6,20 +6,24 @@ setopt shwordsplit
 SHUNIT_PARENT=$0
 
 oneTimeSetUp() {
+    source mockz/mockz.zsh
+    source segments/git.zsh
+
     git clone https://github.com/danielefongo/foo &>/dev/null
 
     SHAPESHIFT_GIT_DIFF_SYMBOL="o"
     SHAPESHIFT_GIT_UNTRACKED_COLOR="U"
     SHAPESHIFT_GIT_MODIFIED_COLOR="M"
     SHAPESHIFT_GIT_STAGED_COLOR="S"
-    SHAPESHIFT_GIT_AHEAD="+NUM"
-    SHAPESHIFT_GIT_BEHIND="-NUM"
+    SHAPESHIFT_GIT_AHEAD="+ NUM"
+    SHAPESHIFT_GIT_BEHIND="- NUM"
     SHAPESHIFT_GIT_DETATCHED="!"
     SHAPESHIFT_GIT_MERGING="x"
+
+    mock colorize do 'echo "$1$2"'
 }
 
 setUp() {
-    source segments/git.zsh
     cd foo
 }
 
@@ -79,10 +83,6 @@ test_git_position_merging() {
 }
 
 # Utilities
-
-colorize() {
-    print -n "$1$2"
-}
 
 createOrModifyFile() {
     echo "$2" > "$1"

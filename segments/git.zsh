@@ -24,9 +24,9 @@ function git_position() {
 
     local position=""
 
-    __git_position_append $(git_position_ahead)
-    __git_position_append $(git_position_behind)
-    __git_position_append $(git_position_detached)
+    __git_position_append "$(git_position_ahead)"
+    __git_position_append "$(git_position_behind)"
+    __git_position_append "$(git_position_detached)"
 
     print -n $position
 }
