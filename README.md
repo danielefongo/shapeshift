@@ -1,5 +1,7 @@
 # shapeshift
 
+![CI](https://github.com/danielefongo/shapeshift/workflows/CI/badge.svg)
+
 shapeshift is an extremely customizable asynchronous prompt inspired by [sindresorhus/pure](https://github.com/sindresorhus/pure).
 
 <p align="center">
