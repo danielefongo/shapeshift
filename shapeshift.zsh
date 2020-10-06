@@ -21,7 +21,7 @@ source "$__shapeshift_path/utils/theme.zsh"
 function precmd() {
     __shapeshift_last_command_status=$?
 
-    cache git_branch &>/dev/null
+    __shapeshift_cache_branch
 
     __shapeshift_ls_update
 
@@ -30,13 +30,20 @@ function precmd() {
     __shapeshift_exec_elements $SHAPESHIFT_PROMPT_LEFT_ELEMENTS
     __shapeshift_exec_elements $SHAPESHIFT_PROMPT_RIGHT_ELEMENTS
 
-    __shapeshift_update_prompt
-
     timer_stop last_command
+
+    __shapeshift_update_prompt
 }
 
 function preexec() {
     timer_start last_command
+}
+
+function __shapeshift_cache_branch() {
+    if [ "$(pwd)" != "$__shapeshift_last_pwd" ]; then
+        cache git_branch &>/dev/null
+        __shapeshift_last_pwd=$(pwd)
+    fi
 }
 
 function __shapeshift_update_prompt() {

@@ -5,10 +5,6 @@ function git_branch() {
 }
 
 function git_diffs() {
-    if ! [ $(git_branch) ]; then
-        __print_empty && return
-    fi
-
     local diffs
     diffs+="$(git_diffs_untracked)"
     diffs+="$(git_diffs_modified)"
@@ -18,10 +14,6 @@ function git_diffs() {
 }
 
 function git_position() {
-    if ! [ $(git_branch) ]; then
-        __print_empty && return
-    fi
-
     local position=""
 
     __git_position_append "$(git_position_ahead)"
@@ -115,8 +107,7 @@ function __git_position_append() {
 }
 
 function __is_git_folder() {
-    git status -s &>/dev/null
-    return $?
+    git rev-parse --is-inside-work-tree &>/dev/null
 }
 
 function __print_empty() {
