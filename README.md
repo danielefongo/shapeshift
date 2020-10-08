@@ -83,6 +83,10 @@ colorize_from_status <ok-text> <ok-color> <ok-bold> <ko-text> <ko-color> <ko-bol
 
 Where bold can be `true` or `false`.
 
+#### Git folder
+
+You can check if you are on git folder by using the `SHAPESHIFT_IS_GIT_REPO` variable to speed up computations.
+
 ### Default segment functions properties
 
 Default segment functions have some useful properties:

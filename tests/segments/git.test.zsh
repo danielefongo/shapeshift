@@ -20,6 +20,8 @@ oneTimeSetUp() {
     SHAPESHIFT_GIT_DETATCHED="!"
     SHAPESHIFT_GIT_MERGING="x"
 
+    SHAPESHIFT_IS_GIT_REPO=true
+
     mock colorize do 'echo "$1$2"'
 }
 

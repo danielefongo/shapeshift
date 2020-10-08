@@ -8,7 +8,6 @@ source "$__shapeshift_path/utils/lock.zsh"
 source "$__shapeshift_path/utils/async.zsh"
 source "$__shapeshift_path/utils/exec.zsh"
 source "$__shapeshift_path/utils/time.zsh"
-source "$__shapeshift_path/utils/cache.zsh"
 
 # segment functions
 source "$__shapeshift_path/segments/time.zsh"
@@ -21,7 +20,7 @@ source "$__shapeshift_path/utils/theme.zsh"
 function precmd() {
     __shapeshift_last_command_status=$?
 
-    cache git_branch &>/dev/null
+    __shapeshift_set_is_git_repo
 
     __shapeshift_ls_update
 
@@ -93,6 +92,15 @@ function __shapeshift_ls_update() {
         color_ls_set
     else
         color_ls_unset
+    fi
+}
+
+function __shapeshift_set_is_git_repo() {
+    git rev-parse --is-inside-work-tree &>/dev/null
+    if [ $? = 0 ]; then
+        SHAPESHIFT_IS_GIT_REPO=true
+    else
+        SHAPESHIFT_IS_GIT_REPO=false
     fi
 }
 
