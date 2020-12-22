@@ -6,8 +6,10 @@ setopt shwordsplit
 SHUNIT_PARENT=$0
 
 oneTimeSetUp() {
-    source shapeshift.zsh
     source mockz/mockz.zsh
+    mock compdef
+    mock compinit
+    source shapeshift.zsh
 }
 
 tearDown() {
