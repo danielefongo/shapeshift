@@ -18,6 +18,10 @@ source "$__shapeshift_path/segments/dir.zsh"
 source "$__shapeshift_path/utils/theme.zsh"
 
 function precmd() {
+    if [[ $SHAPESHIFT_PRECMD ]]; then
+        eval $SHAPESHIFT_PRECMD
+    fi
+
     __shapeshift_last_command_status=$?
 
     __shapeshift_set_is_git_repo

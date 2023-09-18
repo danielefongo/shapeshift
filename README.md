@@ -40,8 +40,9 @@ antigen bundle danielefongo/shapeshift
 ## Customization
 
 Every element showed on the prompt can be easily customized by overriding properties. You can do it in different ways:
-* by adding assignments after the sourcing or the `antigen apply` command.
-* by creating your own theme with all the customized properties.
+
+- by adding assignments after the sourcing or the `antigen apply` command.
+- by creating your own theme with all the customized properties.
 
 See below for more details.
 
@@ -92,18 +93,21 @@ You can check if you are on git folder by using the `SHAPESHIFT_IS_GIT_REPO` var
 Default segment functions have some useful properties:
 
 #### last_command_elapsed_time
+
 ```
 SHAPESHIFT_LAST_COMMAND_ELAPSED_TIME_COLOR="yellow"
 SHAPESHIFT_LAST_COMMAND_ELAPSED_TIME_BOLD=true
 ```
 
 #### git_branch
+
 ```
 SHAPESHIFT_GIT_BRANCH_COLOR="white"
 SHAPESHIFT_GIT_BRANCH_BOLD=true
 ```
 
 #### git_position
+
 ```
 SHAPESHIFT_GIT_AHEAD="+NUM"
 SHAPESHIFT_GIT_AHEAD_COLOR="cyan"
@@ -123,6 +127,7 @@ SHAPESHIFT_GIT_MERGING_BOLD=true
 ```
 
 #### git_diffs
+
 ```
 SHAPESHIFT_GIT_DIFF_SYMBOL="-"
 SHAPESHIFT_GIT_UNTRACKED_COLOR="red"
@@ -134,6 +139,7 @@ SHAPESHIFT_GIT_STAGED_BOLD=true
 ```
 
 #### prompt_dir
+
 ```
 SHAPESHIFT_DIR_LENGTH=3
 SHAPESHIFT_TRUNCATED_DIR_COLOR="blue"
@@ -143,6 +149,7 @@ SHAPESHIFT_LAST_FOLDER_DIR_BOLD=true
 ```
 
 #### prompt_arrow
+
 ```
 SHAPESHIFT_ARROW_OK_CHAR="❯"
 SHAPESHIFT_ARROW_OK_COLOR="green"
@@ -153,6 +160,7 @@ SHAPESHIFT_ARROW_KO_CHAR_BOLD=true
 ```
 
 ### Prompt newline
+
 ```
 SHAPESHIFT_NEWLINE_AFTER_COMMAND=true
 ```
@@ -189,6 +197,14 @@ The possible colors are the following:
 - grey, boldgrey
 
 Any wrong color will be replaced with the default one.
+
+### Pre-prompt
+
+```
+SHAPESHIFT_PRECMD="source myfile"
+```
+
+If set, this zsh code will be run before the command.
 
 ### Themes
 
